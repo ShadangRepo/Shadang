@@ -1,29 +1,15 @@
 import React from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { NotFound } from "../common/NotFound";
+import { Dashboard } from "../pages/dashboard/Dashboard";
 
 const Application = () => {
-  // useEffect(() => {
-  //   const script = document.createElement("script");
-  //   script.id = "translation-script";
-  //   script.src = "https://translate.google.com/translate_a/element.js";
-  //   script.async = true;
-  //   document.body.appendChild(script);
-  //   document
-  //     .getElementById("translation-script")
-  //     .addEventListener("load", () => {
-  //       if (window.google) {
-  //         new window.google.translate.TranslateElement(
-  //           { pageLanguage: "en" },
-  //           "google_translate_element"
-  //         );
-  //       }
-  //     });
-  // }, []);
-
   return (
-    <>
-      {/* <div id="google_translate_element"></div> */}
-      Application routing
-    </>
+    <Switch>
+      <Route exact path="/" render={(props) => <Redirect to={"/category"} />} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route component={NotFound} />
+    </Switch>
   );
 };
 
