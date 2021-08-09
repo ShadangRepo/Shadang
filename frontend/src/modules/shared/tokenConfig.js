@@ -6,6 +6,7 @@ const getToken = () => {
         return "Bearer: " + token;
     }
     else {
+        //get token from api and store it to local storage
         return null;
     }
 }

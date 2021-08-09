@@ -4,6 +4,7 @@ import LoadingBar from "react-top-loading-bar";
 import { Notifications, useNotifications } from "../common/Notifications";
 import { useMediaQuery, useTheme, withStyles } from "@material-ui/core";
 import { getToken } from "../shared/tokenConfig";
+import { proxyClient } from "../shared/proxy-client";
 
 const styles = {
   root: {
@@ -23,50 +24,46 @@ const ThemeWrapper = ({ classes, children }) => {
   let loadingBarRef = createRef();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [loader, setLoader] = useState();
 
   useEffect(() => {
-    let token = getToken();
-    if (token) {
-      //get user details for token;
-      setUser({});
-    } else {
-      setUser({});
-    }
+    const { current: loadingBar } = loadingBarRef;
+    if (!loadingBar) return;
+    setLoader(loadingBar);
+    const { continuousStart, complete } = loadingBar;
+    proxyClient.configure({
+      startCallback: continuousStart,
+      endCallback: () => {
+        const { state: { progress = 0 } = {} } = loadingBar;
+        if (progress) complete();
+      },
+    });
   }, []);
 
   return (
-    <>
-      {user ? (
-        <div className={classes.root}>
-          <AppContext.Provider
-            value={{
-              user,
-              setUser,
-              notifications,
-              queueNotification,
-              isMobile,
-            }}
-          >
-            <>
-              <LoadingBar
-                height={0}
-                color="#01579B"
-                ref={loadingBarRef}
-                className={classes.loadingBar}
-              />
-              {children}
-              <Notifications />
-            </>
-          </AppContext.Provider>
-        </div>
-      ) : (
-        <img
-          src="/images/spinner.gif"
-          className="preloader-init"
-          alt="spinner"
-        />
-      )}
-    </>
+    <div className={classes.root}>
+      <AppContext.Provider
+        value={{
+          user,
+          setUser,
+          notifications,
+          queueNotification,
+          isMobile,
+          loadingBar: loader,
+        }}
+      >
+        <>
+          <LoadingBar
+            height={0}
+            color="#01579B"
+            ref={loadingBarRef}
+            className={classes.loadingBar}
+          />
+          {children}
+          <Notifications />
+        </>
+      </AppContext.Provider>
+    </div>
   );
 };
 

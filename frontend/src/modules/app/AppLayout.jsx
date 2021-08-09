@@ -94,23 +94,23 @@ const AppLayout = ({ children }) => {
               open={open}
               onClose={handleClose}
             >
-              {!user && (
+              {user && (
                 <MenuItem onClick={() => handleMenuClick(MenuIndex.Account)}>
                   Profile
                 </MenuItem>
               )}
-              {!user && (
+              {user && (
                 <MenuItem onClick={() => handleMenuClick(MenuIndex.Logout)}>
                   Logout
                 </MenuItem>
               )}
 
-              {user && (
+              {!user && (
                 <MenuItem onClick={() => handleMenuClick(MenuIndex.Login)}>
                   Login
                 </MenuItem>
               )}
-              {user && (
+              {!user && (
                 <MenuItem onClick={() => handleMenuClick(MenuIndex.Signup)}>
                   Create account
                 </MenuItem>

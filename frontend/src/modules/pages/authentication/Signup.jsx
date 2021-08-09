@@ -16,6 +16,7 @@ import { useStyles } from "./styles";
 import { useGlobalStyles } from "../../shared/globalStyles";
 import { useHistory } from "react-router-dom";
 import { PhoneField } from "../../common/MaskedInputs";
+import { proxyClient } from "../../shared/proxy-client";
 // eslint-disable-next-line no-useless-escape
 var specialCharacterRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
@@ -49,6 +50,8 @@ const Signup = () => {
     if (!newData.firstName) newErrors.firstName = "First Name is required";
     if (!newData.lastName) newErrors.lastName = "Last Name is required";
     if (!newData.contact) newErrors.contact = "Contact number is required";
+    if (newData.contact && newData.contact.length !== 10)
+      newErrors.contact = "Please enter valid contact";
     if (!newData.email) newErrors.email = "Email is required";
     if (!newData.password) newErrors.password = "Password is required";
     if (
@@ -78,17 +81,35 @@ const Signup = () => {
     if (saveStatus.hasSaved) updateInvalidFields(newFormData);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (updateInvalidFields(formData)) {
       queueNotification(StandardMessageTypes.ValidationErrors);
       setSaveStatus({ hasSaved: true, isSaving: false });
       return;
     }
 
+    let payload = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      contact: formData.contact,
+      password: formData.password,
+    };
+
     setSaveStatus({ hasSaved: true, isSaving: true });
-    setTimeout(() => {
+    try {
+      let query = await proxyClient.post("/auth/signup", payload, {
+        noAuth: true,
+      });
+      const response = query.response;
       setSaveStatus({ hasSaved: true, isSaving: false });
-    }, 2000);
+      if (response.success) {
+        history.push("/");
+      }
+    } catch (err) {
+      queueNotification(err);
+      setSaveStatus({ hasSaved: true, isSaving: false });
+    }
   };
 
   const navigateLogin = () => {

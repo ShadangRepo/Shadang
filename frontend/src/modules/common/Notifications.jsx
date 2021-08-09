@@ -23,6 +23,15 @@ const styles = (theme) => ({
   snackbarDefault: {
     zIndex: 1310,
   },
+  bgSuccess: {
+    background: "#0f0",
+  },
+  bgError: {
+    background: "#f00",
+  },
+  bgDefault: {
+    background: "#3B3B3B",
+  },
 });
 
 const NotificationStatus = Object.freeze({
@@ -91,10 +100,10 @@ const Notifications = ({ classes }) => {
             classes: {
               root:
                 status === NotificationStatus.Success
-                  ? "#0f0"
+                  ? classes.bgSuccess
                   : status === NotificationStatus.Error
-                  ? "#f00"
-                  : "#f00",
+                  ? classes.bgError
+                  : classes.bgDefault,
               action: classes.actionDefault,
             },
             action: [
