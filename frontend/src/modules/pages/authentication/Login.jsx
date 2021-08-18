@@ -15,6 +15,7 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import { useStyles } from "./styles";
 import { useGlobalStyles } from "../../shared/globalStyles";
 import { useHistory } from "react-router-dom";
+import { proxyClient } from "../../shared/proxy-client";
 
 const Login = () => {
   const classes = useStyles();
@@ -51,7 +52,7 @@ const Login = () => {
     if (saveStatus.hasSaved) updateInvalidFields(newFormData);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (updateInvalidFields(formData)) {
       queueNotification(StandardMessageTypes.ValidationErrors);
       setSaveStatus({ hasSaved: true, isSaving: false });
@@ -59,10 +60,30 @@ const Login = () => {
     }
 
     setSaveStatus({ hasSaved: true, isSaving: true });
-    setTimeout(() => {
-      setSaveStatus({ hasSaved: true, isSaving: false });
-      setEmailValid(true);
-    }, 2000);
+    if (!emailValid) {
+      setTimeout(() => {
+        setSaveStatus({ hasSaved: true, isSaving: false });
+        setEmailValid(true);
+      }, 2000);
+    } else {
+      let payload = {
+        email: formData.email,
+        password: formData.password,
+      };
+      try {
+        let query = await proxyClient.post("/auth/login", payload, {
+          noAuth: true,
+        });
+        const response = query.response;
+        setSaveStatus({ hasSaved: true, isSaving: false });
+        if (response.success) {
+          history.push("/");
+        }
+      } catch (err) {
+        queueNotification(err);
+        setSaveStatus({ hasSaved: true, isSaving: false });
+      }
+    }
   };
 
   const navigateSignup = () => {
