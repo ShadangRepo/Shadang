@@ -24,7 +24,7 @@ const styles = (theme) => ({
     zIndex: 1310,
   },
   bgSuccess: {
-    background: "#0f0",
+    background: "#228b22",
   },
   bgError: {
     background: "#f00",
@@ -63,6 +63,10 @@ const useNotifications = () => {
     if (!notification) return;
     else if (typeof notification !== "object")
       notification = StandardMessages[notification] || {};
+    else if (notification.status === true)
+      notification.status = NotificationStatus.Success;
+    else if (notification.status === false)
+      notification.status = NotificationStatus.Error;
     else if (notification.uri && notification.status >= 100) {
       if (notification.message && typeof notification.message === "object")
         notification = notification.message;

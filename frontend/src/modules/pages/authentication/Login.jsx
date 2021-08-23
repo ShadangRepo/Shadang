@@ -7,7 +7,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import { LoaderButton } from "../../common/LoaderButton";
-import { StandardMessageTypes } from "../../common/Notifications";
+import {
+  NotificationStatus,
+  StandardMessageTypes,
+} from "../../common/Notifications";
 import { AppContext } from "../../common/AppContext";
 import { emailValidator } from "../../shared/fieldValidators";
 import VisibilityIcon from "@material-ui/icons/Visibility";
@@ -64,7 +67,7 @@ const Login = () => {
       setTimeout(() => {
         setSaveStatus({ hasSaved: true, isSaving: false });
         setEmailValid(true);
-      }, 2000);
+      }, 500);
     } else {
       let payload = {
         email: formData.email,
@@ -77,7 +80,16 @@ const Login = () => {
         const response = query.response;
         setSaveStatus({ hasSaved: true, isSaving: false });
         if (response.success) {
+          queueNotification({
+            status: NotificationStatus.Success,
+            message: "Login successful",
+          });
           history.push("/");
+        } else {
+          queueNotification({
+            status: NotificationStatus.Error,
+            message: response.message,
+          });
         }
       } catch (err) {
         queueNotification(err);
