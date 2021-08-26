@@ -19,6 +19,7 @@ import { useStyles } from "./styles";
 import { useGlobalStyles } from "../../shared/globalStyles";
 import { useHistory } from "react-router-dom";
 import { proxyClient } from "../../shared/proxy-client";
+import { setTokenToLocalStorage } from "../../preferences/userPreferences";
 
 const Login = () => {
   const classes = useStyles();
@@ -30,7 +31,7 @@ const Login = () => {
     hasSaved: false,
   });
   const [emailValid, setEmailValid] = useState(false);
-  const { queueNotification } = useContext(AppContext);
+  const { queueNotification, setUser } = useContext(AppContext);
   const [passwordVisibility, setPasseordVisibility] = useState(false);
   const history = useHistory();
 
@@ -79,7 +80,13 @@ const Login = () => {
         });
         const response = query.response;
         setSaveStatus({ hasSaved: true, isSaving: false });
-        if (response.success) {
+        if (response.success && response.data) {
+          if (response.data.token) {
+            setTokenToLocalStorage(response.data.token);
+          }
+          let userResponse = { ...response.data };
+          delete userResponse.token;
+          setUser(userResponse);
           queueNotification({
             status: NotificationStatus.Success,
             message: "Login successful",

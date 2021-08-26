@@ -25,6 +25,7 @@ const ThemeWrapper = ({ classes, children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [loader, setLoader] = useState();
+  const [loadingUserDetails, setLoadingUserDetails] = useState(true);
 
   useEffect(() => {
     const { current: loadingBar } = loadingBarRef;
@@ -38,32 +39,49 @@ const ThemeWrapper = ({ classes, children }) => {
         if (progress) complete();
       },
     });
+
+    //if token exist, get user details from api and store them to context
+    const token = getToken();
+    if (token) {
+      //Create api to get user details based on token
+      setLoadingUserDetails(false);
+    }
   }, []);
 
   return (
-    <div className={classes.root}>
-      <AppContext.Provider
-        value={{
-          user,
-          setUser,
-          notifications,
-          queueNotification,
-          isMobile,
-          loadingBar: loader,
-        }}
-      >
-        <>
-          <LoadingBar
-            height={0}
-            color="#01579B"
-            ref={loadingBarRef}
-            className={classes.loadingBar}
-          />
-          {children}
-          <Notifications />
-        </>
-      </AppContext.Provider>
-    </div>
+    <>
+      {!loadingUserDetails ? (
+        <div className={classes.root}>
+          <AppContext.Provider
+            value={{
+              user,
+              setUser,
+              notifications,
+              queueNotification,
+              isMobile,
+              loadingBar: loader,
+            }}
+          >
+            <>
+              <LoadingBar
+                height={0}
+                color="#01579B"
+                ref={loadingBarRef}
+                className={classes.loadingBar}
+              />
+              {children}
+              <Notifications />
+            </>
+          </AppContext.Provider>
+        </div>
+      ) : (
+        <img
+          src="/images/spinner.gif"
+          className="preloader-init"
+          alt="spinner"
+        />
+      )}
+    </>
   );
 };
 
