@@ -55,17 +55,22 @@ router.post("/signup", async (req, res) => {
         } else if (!body.password) {
             res.send({ success: false, message: "Password is required" })
         } else {
-            body.password = await encryptPassword(body.password)
-            const response = await dbHandler.create(TableName.users, body)
-            delete response.data.password;
-            const token = jwt.sign(
-                response.data,
-                constants.TOKEN_KEY,
-                {
-                    expiresIn: "1h",
-                }
-            );
-            res.send({ success: true, data: { token } })
+            const existingUser = await dbHandler.conditionBassedReadOne(TableName.users, "email", "==", body.email)
+            if (existingUser.success) {
+                res.send({ success: false, message: "This Email is already taken" });
+            } else {
+                body.password = await encryptPassword(body.password)
+                const response = await dbHandler.create(TableName.users, body)
+                delete response.data.password;
+                const token = jwt.sign(
+                    response.data,
+                    constants.TOKEN_KEY,
+                    {
+                        expiresIn: "1h",
+                    }
+                );
+                res.send({ success: true, data: { token } });
+            }
         }
     } catch (error) {
         res.status(200).send({ success: false, message: error })

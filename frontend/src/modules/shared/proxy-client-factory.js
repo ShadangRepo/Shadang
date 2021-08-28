@@ -112,7 +112,6 @@ class ProxyClient {
                 responseType: blob ? 'arraybuffer' : 'json',
             })
                 .then(({ data, headers }) => {
-                    console.log("res data, headers", data, headers)
                     if (blob) {
                         let filename = 'file';
                         const contentDisposition = getHeader({ headerName: 'Content-Disposition', headers });
