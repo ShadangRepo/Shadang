@@ -1,5 +1,5 @@
 const getTokenFromLocalStorage = () => {
-    const token = localStorage.getItem("sec_toc"); //sec_toc stands for encrypted secret token
+    const token = localStorage.getItem("sec_toc"); //sec_toc stands for secret token
     return token;
 }
 
@@ -8,4 +8,13 @@ const setTokenToLocalStorage = (token) => {
     return true;
 }
 
-export { getTokenFromLocalStorage, setTokenToLocalStorage };
+const clearTokenFromLocalStorage = () => {
+    localStorage.removeItem("sec_toc");
+    return true;
+}
+
+export {
+    getTokenFromLocalStorage,
+    setTokenToLocalStorage,
+    clearTokenFromLocalStorage
+};

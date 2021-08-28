@@ -13,6 +13,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import { AppContext } from "../common/AppContext";
 import { useHistory } from "react-router-dom";
+import { clearTokenFromLocalStorage } from "../preferences/userPreferences";
 
 const MenuIndex = {
   Account: 0,
@@ -43,6 +44,8 @@ const AppLayout = ({ children }) => {
       case MenuIndex.Account:
         break;
       case MenuIndex.Logout:
+        clearTokenFromLocalStorage();
+        window.location.reload();
         break;
       case MenuIndex.Login:
         history.push("/login");
