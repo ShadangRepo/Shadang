@@ -30,8 +30,27 @@ const ThemeWrapper = ({ classes, children }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [loader, setLoader] = useState();
   const [loadingUserDetails, setLoadingUserDetails] = useState(true);
+  const [blurScreen, setBlurScreen] = useState(false);
 
   useEffect(() => {
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Meta" || event.key === "Alt") {
+        navigator.clipboard.writeText("");
+        setBlurScreen(true);
+      }
+    });
+    window.addEventListener("keyup", (event) => {
+      if (event.key === "Meta" || event.key === "Alt") {
+        setBlurScreen(false);
+      }
+    });
+    window.addEventListener("focus", (event) => {
+      setBlurScreen(false);
+    });
+    window.addEventListener("blur", () => {
+      setBlurScreen(true);
+    });
+
     const { current: loadingBar } = loadingBarRef;
     if (!loadingBar) return;
     setLoader(loadingBar);
@@ -75,7 +94,7 @@ const ThemeWrapper = ({ classes, children }) => {
   }, []);
 
   return (
-    <>
+    <div style={{ opacity: blurScreen ? 0.2 : 1 }}>
       {!loadingUserDetails ? (
         <div className={classes.root}>
           <AppContext.Provider
@@ -108,7 +127,7 @@ const ThemeWrapper = ({ classes, children }) => {
           alt="spinner"
         />
       )}
-    </>
+    </div>
   );
 };
 

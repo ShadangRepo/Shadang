@@ -64,7 +64,12 @@ const AppLayout = ({ children }) => {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
+          <Typography
+            variant="h6"
+            className={classes.title}
+            onClick={() => history.push("/")}
+            style={{ cursor: "pointer" }}
+          >
             Shadang
           </Typography>
           <div>
