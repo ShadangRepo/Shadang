@@ -7,6 +7,8 @@ export const useStyles = makeStyles((theme) => ({
   avatarContainer: {
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     fontWeight: "bold",
@@ -15,7 +17,7 @@ export const useStyles = makeStyles((theme) => ({
   },
 }));
 const CircleAvatar = (props) => {
-  const { url, alt, size, style, label, selected, onClick } = props;
+  const { url, alt, size, style, label, labelStyle, selected, onClick } = props;
   const theme = useTheme();
   const classes = useStyles();
 
@@ -45,7 +47,11 @@ const CircleAvatar = (props) => {
             onClick={onClick || undefined}
           />
           {label && (
-            <Typography align="center" className={classes.label}>
+            <Typography
+              align="center"
+              className={classes.label}
+              style={labelStyle || {}}
+            >
               {label}
             </Typography>
           )}
@@ -56,7 +62,11 @@ const CircleAvatar = (props) => {
             <Typography style={{ fontWeight: "bold" }}>{alt}</Typography>
           </div>
           {label && (
-            <Typography align="center" className={classes.label}>
+            <Typography
+              align="center"
+              className={classes.label}
+              style={labelStyle || {}}
+            >
               {label}
             </Typography>
           )}

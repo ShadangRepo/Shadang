@@ -1,10 +1,11 @@
 import React from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { NotFound } from "../common/NotFound";
+import { UserProfile } from "../pages/authentication/UserProfile";
 import { Catalog } from "../pages/catalog/Catalog";
 import { Dashboard } from "../pages/dashboard/Dashboard";
 import { AppLayout } from "./AppLayout";
-// import { ProtectedRoute } from "../common/ProtectedRoute";
+import { ProtectedRoute } from "../common/ProtectedRoute";
 
 const Application = () => {
   return (
@@ -17,7 +18,7 @@ const Application = () => {
         />
         <Route path="/catalog" component={Catalog} />
         <Route path="/dashboard" component={Dashboard} />
-        {/* <ProtectedRoute path="/" component={Application} /> */}
+        <ProtectedRoute path="/user-profile" component={UserProfile} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>

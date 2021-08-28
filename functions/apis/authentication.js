@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
                     );
                     res.send({ success: true, data: { token } })
                 } else {
-                    res.status(403).send({ success: false, message: "Invalid password" })
+                    res.send({ success: false, message: "Invalid password" })
                 }
             } else {
                 res.send(response)

@@ -42,6 +42,8 @@ const AppLayout = ({ children }) => {
   const handleMenuClick = (menuIndex) => {
     switch (menuIndex) {
       case MenuIndex.Account:
+        history.push("/user-profile");
+        handleClose();
         break;
       case MenuIndex.Logout:
         clearTokenFromLocalStorage();

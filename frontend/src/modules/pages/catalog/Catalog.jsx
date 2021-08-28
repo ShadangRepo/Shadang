@@ -1,7 +1,7 @@
 import { Grid } from "@material-ui/core";
 import React, { useState } from "react";
 import { CircleAvatar } from "../../common/CircleAvatar";
-import { useCatalogStyles } from "./style";
+import { useCatalogStyles } from "./catalogStyles";
 
 const Catalog = () => {
   const classes = useCatalogStyles();

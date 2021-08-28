@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 
 const iconDimension = 100;
 
-export const useStyles = makeStyles((theme) => ({
+export const useAuthenticationStyles = makeStyles((theme) => ({
     root: {
         width: 500,
         position: "absolute",
