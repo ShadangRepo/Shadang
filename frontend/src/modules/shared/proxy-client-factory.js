@@ -96,7 +96,7 @@ class ProxyClient {
                 cache: 'no-store',
                 'x-time-offset': -new Date().getTimezoneOffset() / 60,
             };
-            if (token) headers['Authorization'] = `bearer ${token}`;
+            if (token) headers['Authorization'] = `Bearer ${token}`;
             if (formData) headers['Content-Type'] = 'multipart/form-data';
             else if (body) headers['Content-Type'] = 'application/json';
             if (blob) headers['Accept'] = '*/*';

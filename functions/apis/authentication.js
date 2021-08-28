@@ -5,6 +5,7 @@ const { encryptPassword, checkPassword } = require('../utils/encryption');
 const TableName = constants.TableName;
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const verifyToken = require('../middleware/auth');
 
 router.post("/login", async (req, res) => {
     let body = req.body;
@@ -26,8 +27,7 @@ router.post("/login", async (req, res) => {
                             expiresIn: "1h",
                         }
                     );
-                    response.data.token = token
-                    res.send(response)
+                    res.send({ success: true, data: { token } })
                 } else {
                     res.status(403).send({ success: false, message: "Invalid password" })
                 }
@@ -37,9 +37,9 @@ router.post("/login", async (req, res) => {
 
         }
     } catch (error) {
-        res.status(400).send({ success: false, message: error })
+        res.status(200).send({ success: false, message: error })
     }
-})
+});
 
 router.post("/signup", async (req, res) => {
     try {
@@ -57,10 +57,26 @@ router.post("/signup", async (req, res) => {
         } else {
             body.password = await encryptPassword(body.password)
             const response = await dbHandler.create(TableName.users, body)
-            res.send(response)
+            delete response.data.password;
+            const token = jwt.sign(
+                response.data,
+                constants.TOKEN_KEY,
+                {
+                    expiresIn: "1h",
+                }
+            );
+            res.send({ success: true, data: { token } })
         }
     } catch (error) {
-        res.status(400).send({ success: false, message: error })
+        res.status(200).send({ success: false, message: error })
+    }
+});
+
+router.get("/getUserDetails", verifyToken, async (req, res) => {
+    if (req.decodedUser) {
+        res.send({ success: true, data: req.decodedUser })
+    } else {
+        res.status(200).send({ success: false, message: "User details not found" })
     }
 })
 

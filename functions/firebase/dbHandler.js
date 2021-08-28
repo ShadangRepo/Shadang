@@ -5,9 +5,14 @@ const create = (tableName, data) => {
     return new Promise((resolve) => {
         const collection = db.collection(tableName);
         collection.add(data).then(docRef => {
-            resolve({ success: true, data: { id: docRef.id } })
+            docRef.get().then((querySnapshot) => {
+                resolve({ success: true, data: { id: docRef.id, ...querySnapshot.data() } })
+            }).catch(error => {
+                resolve({ success: false, message: `${error}` })
+            })
+
         }).catch(err => {
-            resolve({ success: false, message: err })
+            resolve({ success: false, message: `${err}` })
         });
     })
 }

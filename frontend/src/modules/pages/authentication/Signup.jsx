@@ -7,7 +7,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import { LoaderButton } from "../../common/LoaderButton";
-import { StandardMessageTypes } from "../../common/Notifications";
+import {
+  NotificationStatus,
+  StandardMessageTypes,
+} from "../../common/Notifications";
 import { AppContext } from "../../common/AppContext";
 import { emailValidator } from "../../shared/fieldValidators";
 import VisibilityIcon from "@material-ui/icons/Visibility";
@@ -17,6 +20,7 @@ import { useGlobalStyles } from "../../shared/globalStyles";
 import { useHistory } from "react-router-dom";
 import { PhoneField } from "../../common/MaskedInputs";
 import { proxyClient } from "../../shared/proxy-client";
+import { setTokenToLocalStorage } from "../../preferences/userPreferences";
 // eslint-disable-next-line no-useless-escape
 var specialCharacterRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
@@ -29,7 +33,7 @@ const Signup = () => {
     isSaving: false,
     hasSaved: false,
   });
-  const { queueNotification } = useContext(AppContext);
+  const { queueNotification, getUserDetailsFromApi } = useContext(AppContext);
   const [passwordVisibility, setPasseordVisibility] = useState(false);
   const history = useHistory();
 
@@ -103,8 +107,15 @@ const Signup = () => {
       });
       const response = query.response;
       setSaveStatus({ hasSaved: true, isSaving: false });
-      if (response.success) {
+      if (response.success && response.data && response.data.token) {
+        setTokenToLocalStorage(response.data.token);
+        await getUserDetailsFromApi();
         history.push("/");
+      } else {
+        queueNotification({
+          status: NotificationStatus.Error,
+          message: response.message,
+        });
       }
     } catch (err) {
       queueNotification(err);

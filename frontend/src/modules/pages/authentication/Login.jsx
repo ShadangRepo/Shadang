@@ -31,7 +31,7 @@ const Login = () => {
     hasSaved: false,
   });
   const [emailValid, setEmailValid] = useState(false);
-  const { queueNotification, setUser } = useContext(AppContext);
+  const { queueNotification, getUserDetailsFromApi } = useContext(AppContext);
   const [passwordVisibility, setPasseordVisibility] = useState(false);
   const history = useHistory();
 
@@ -84,9 +84,7 @@ const Login = () => {
           if (response.data.token) {
             setTokenToLocalStorage(response.data.token);
           }
-          let userResponse = { ...response.data };
-          delete userResponse.token;
-          setUser(userResponse);
+          await getUserDetailsFromApi();
           queueNotification({
             status: NotificationStatus.Success,
             message: "Login successful",

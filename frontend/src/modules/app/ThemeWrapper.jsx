@@ -1,7 +1,11 @@
 import React, { createRef, useEffect, useState } from "react";
 import { AppContext } from "../common/AppContext";
 import LoadingBar from "react-top-loading-bar";
-import { Notifications, useNotifications } from "../common/Notifications";
+import {
+  Notifications,
+  NotificationStatus,
+  useNotifications,
+} from "../common/Notifications";
 import { useMediaQuery, useTheme, withStyles } from "@material-ui/core";
 import { getToken } from "../shared/tokenConfig";
 import { proxyClient } from "../shared/proxy-client";
@@ -39,11 +43,33 @@ const ThemeWrapper = ({ classes, children }) => {
         if (progress) complete();
       },
     });
+  }, []);
 
+  const getUserDetailsFromApi = async () => {
+    try {
+      let query = await proxyClient.get("/auth/getUserDetails");
+      const response = query.response;
+      if (response.success && response.data) {
+        setUser(response.data);
+      } else {
+        queueNotification({
+          status: NotificationStatus.Error,
+          message: response.message,
+        });
+      }
+    } catch (err) {
+      queueNotification(err);
+    }
+  };
+
+  useEffect(() => {
     //if token exist, get user details from api and store them to context
     const token = getToken();
     if (token) {
-      //Create api to get user details based on token
+      getUserDetailsFromApi().then(() => {
+        setLoadingUserDetails(false);
+      });
+    } else {
       setLoadingUserDetails(false);
     }
   }, []);
@@ -60,6 +86,7 @@ const ThemeWrapper = ({ classes, children }) => {
               queueNotification,
               isMobile,
               loadingBar: loader,
+              getUserDetailsFromApi,
             }}
           >
             <>
