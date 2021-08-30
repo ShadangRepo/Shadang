@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 import { CircleAvatar } from "../../common/CircleAvatar";
 import { useCatalogStyles } from "./catalogStyles";
@@ -49,7 +49,13 @@ const Catalog = () => {
           />
         ))}
       </Grid>
-      <Grid item xs={12}></Grid>
+      <Grid item xs={12} md={6} className={classes.imagePreviewContainer}>
+        <div className={classes.imageOverlay}>Overlay</div>
+        <img src="https://picsum.photos/id/237/200/300" alt="Image" />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Typography>Name of atrist</Typography>
+      </Grid>
     </Grid>
   );
 };
