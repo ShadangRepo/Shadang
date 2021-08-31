@@ -33,6 +33,20 @@ const ThemeWrapper = ({ classes, children }) => {
   const [blurScreen, setBlurScreen] = useState(false);
 
   useEffect(() => {
+    const { current: loadingBar } = loadingBarRef;
+    if (!loadingBar) return;
+    setLoader(loadingBar);
+    const { continuousStart, complete } = loadingBar;
+    proxyClient.configure({
+      startCallback: continuousStart,
+      endCallback: () => {
+        const { state: { progress = 0 } = {} } = loadingBar;
+        if (progress) complete();
+      },
+    });
+  }, []);
+
+  useEffect(() => {
     window.addEventListener("keydown", (event) => {
       if (event.key === "Meta" || event.key === "Alt") {
         navigator.clipboard.writeText("");
@@ -50,18 +64,8 @@ const ThemeWrapper = ({ classes, children }) => {
     window.addEventListener("blur", () => {
       setBlurScreen(true);
     });
-
-    const { current: loadingBar } = loadingBarRef;
-    if (!loadingBar) return;
-    setLoader(loadingBar);
-    const { continuousStart, complete } = loadingBar;
-    proxyClient.configure({
-      startCallback: continuousStart,
-      endCallback: () => {
-        const { state: { progress = 0 } = {} } = loadingBar;
-        if (progress) complete();
-      },
-    });
+    //Disable rigntclick on window to prevent save image
+    window.oncontextmenu = () => false;
   }, []);
 
   const getUserDetailsFromApi = async () => {

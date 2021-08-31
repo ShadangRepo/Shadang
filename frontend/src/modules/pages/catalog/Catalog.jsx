@@ -1,11 +1,13 @@
 import { Grid, Typography } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AppContext } from "../../common/AppContext";
 import { CircleAvatar } from "../../common/CircleAvatar";
 import { useCatalogStyles } from "./catalogStyles";
 
 const Catalog = () => {
   const classes = useCatalogStyles();
   const [selectedCategory, setSelectedCategory] = useState(1);
+  const [imageVisibility, setImageVilibility] = useState(false);
   const categoryArray = [
     {
       id: 1,
@@ -49,8 +51,21 @@ const Catalog = () => {
           />
         ))}
       </Grid>
-      <Grid item xs={12} md={6} className={classes.imagePreviewContainer}>
-        <div className={classes.imageOverlay}>Overlay</div>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        className={classes.imagePreviewContainer}
+        onMouseOver={() => setImageVilibility(true)}
+        onMouseOut={() => setImageVilibility(false)}
+        onTouchStart={async () => setImageVilibility(true)}
+        onTouchEnd={async () => setImageVilibility(false)}
+      >
+        {!imageVisibility && (
+          <div className={classes.imageOverlay}>
+            Move cursor over to veiw image
+          </div>
+        )}
         <img src="https://picsum.photos/id/237/200/300" alt="Image" />
       </Grid>
       <Grid item xs={12} md={6}>

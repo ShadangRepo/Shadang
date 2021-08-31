@@ -53,12 +53,7 @@ const UserConfirmation = (message, callback) => {
     callback(callbackState);
   };
   ReactDOM.render(
-    <Dialog
-      open={true}
-      onClose={() => closeModal(false)}
-      disableBackdropClick
-      disableEscapeKeyDown
-    >
+    <Dialog open={true} onClose={() => closeModal(false)} disableEscapeKeyDown>
       <DialogTitle>Confirm</DialogTitle>
       <DialogContent>
         <DialogContentText style={classes.dialogText}>
