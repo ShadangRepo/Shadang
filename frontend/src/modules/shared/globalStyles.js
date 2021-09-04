@@ -16,5 +16,8 @@ export const useGlobalStyles = makeStyles((theme) => ({
     },
     marginTop40: {
         marginTop: 40
+    },
+    paper: {
+        padding: 20
     }
 }));

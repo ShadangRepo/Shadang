@@ -20,6 +20,7 @@ const MenuIndex = {
   Logout: 1,
   Login: 2,
   Signup: 3,
+  Exhibitions: 4,
 };
 
 const AppLayout = ({ children }) => {
@@ -54,6 +55,10 @@ const AppLayout = ({ children }) => {
         break;
       case MenuIndex.Signup:
         history.push("/signup");
+        break;
+      case MenuIndex.Exhibitions:
+        history.push("/my-exhibitions");
+        handleClose();
         break;
       default:
         break;
@@ -110,11 +115,19 @@ const AppLayout = ({ children }) => {
                 </MenuItem>
               )}
               {user && (
+                <MenuItem
+                  onClick={() => handleMenuClick(MenuIndex.Exhibitions)}
+                >
+                  My Exhibitions
+                </MenuItem>
+              )}
+              {user && (
                 <MenuItem onClick={() => handleMenuClick(MenuIndex.Logout)}>
                   Logout
                 </MenuItem>
               )}
 
+              {/* Prelogin menu items */}
               {!user && (
                 <MenuItem onClick={() => handleMenuClick(MenuIndex.Login)}>
                   Login

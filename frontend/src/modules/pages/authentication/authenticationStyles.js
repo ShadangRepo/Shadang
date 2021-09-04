@@ -71,5 +71,5 @@ export const useAuthenticationStyles = makeStyles((theme) => ({
         flexDirection: "column",
         textAlign: "center",
         justifyContent: "center"
-    },
+    }
 }));

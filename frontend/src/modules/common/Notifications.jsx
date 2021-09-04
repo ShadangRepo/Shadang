@@ -5,6 +5,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { withStyles } from "@material-ui/core/styles";
 import Portal from "@material-ui/core/Portal";
 import { AppContext } from "./AppContext";
+import { clearTokenFromLocalStorage } from "../preferences/userPreferences";
 
 const styles = (theme) => ({
   actionDefault: {
@@ -73,6 +74,12 @@ const useNotifications = () => {
       else if (notification.status >= 500 || notification.status === 404)
         notification = StandardMessages[StandardMessageTypes.GenericError];
     }
+
+    //need to change this logic with refresh token
+    if (notification.status === 2 && notification.message === "Token expired") {
+      clearTokenFromLocalStorage();
+    }
+
     const { message = "" } = notification || {};
     if (!message) return;
     notification.id = "_" + Math.random().toString(36).substr(2, 9);
