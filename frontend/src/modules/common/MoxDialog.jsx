@@ -15,7 +15,7 @@ const styles = (theme) => ({
   },
 });
 
-const MoxDialog = ({
+const CustomDialog = ({
   classes,
   title,
   open,
@@ -97,5 +97,5 @@ const MoxDialog = ({
   );
 };
 
-const MoxDialogStyled = withStyles(styles)(MoxDialog);
-export { MoxDialogStyled as MoxDialog };
+const CustomDialogStyled = withStyles(styles)(CustomDialog);
+export { CustomDialogStyled as CustomDialog };

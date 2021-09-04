@@ -46,27 +46,28 @@ const ThemeWrapper = ({ classes, children }) => {
     });
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("keydown", (event) => {
-      if (event.key === "Meta" || event.key === "Alt") {
-        navigator.clipboard.writeText("");
-        setBlurScreen(true);
-      }
-    });
-    window.addEventListener("keyup", (event) => {
-      if (event.key === "Meta" || event.key === "Alt") {
-        setBlurScreen(false);
-      }
-    });
-    window.addEventListener("focus", (event) => {
-      setBlurScreen(false);
-    });
-    window.addEventListener("blur", () => {
-      setBlurScreen(true);
-    });
-    //Disable rigntclick on window to prevent save image
-    window.oncontextmenu = () => false;
-  }, []);
+  // useEffect(() => {
+  //  //Image security handlers goes here
+  //   window.addEventListener("keydown", (event) => {
+  //     if (event.key === "Meta" || event.key === "Alt") {
+  //       navigator.clipboard.writeText("");
+  //       setBlurScreen(true);
+  //     }
+  //   });
+  //   window.addEventListener("keyup", (event) => {
+  //     if (event.key === "Meta" || event.key === "Alt") {
+  //       setBlurScreen(false);
+  //     }
+  //   });
+  //   window.addEventListener("focus", (event) => {
+  //     setBlurScreen(false);
+  //   });
+  //   window.addEventListener("blur", () => {
+  //     setBlurScreen(true);
+  //   });
+  //   //Disable rigntclick on window to prevent save image
+  //   window.oncontextmenu = () => false;
+  // }, []);
 
   const getUserDetailsFromApi = async () => {
     try {
