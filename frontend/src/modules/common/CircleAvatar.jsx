@@ -3,7 +3,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 
-export const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   avatarContainer: {
     display: "flex",
     flexDirection: "column",
@@ -16,6 +16,7 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: 10,
   },
 }));
+
 const CircleAvatar = (props) => {
   const { url, alt, size, style, label, labelStyle, selected, onClick } = props;
   const theme = useTheme();
