@@ -15,9 +15,19 @@ router.post("/create", verifyToken, async (req, res) => {
         } else if (!body.endDate) {
             res.send({ success: false, message: "End date is required" })
         } else {
-            const response = await dbHandler.create(TableName.exhibitions, body)
+            let exhibitionDetails = { ...body }
+            delete exhibitionDetails.images
+            const response = await dbHandler.create(TableName.exhibitions, exhibitionDetails)
             if (response.success) {
-                res.send({ success: true, message: "Exhibition created successfully" });
+                var formattedImages = body.images ? body.images.map(item => ({
+                    ...item, exhibitionId: response.data.id
+                })) : [];
+                const createExhibitionImagesResponse = await dbHandler.batchCreate(TableName.exhibitionFiles, formattedImages)
+                if (createExhibitionImagesResponse.success) {
+                    res.send({ success: true, message: "Exhibition created successfully" });
+                } else {
+                    res.send({ success: true, message: "Exhibition created successfully, but error saving images" });
+                }
             } else {
                 res.send(response);
             }
@@ -25,6 +35,10 @@ router.post("/create", verifyToken, async (req, res) => {
     } catch (error) {
         res.send({ success: false, message: error })
     }
+});
+
+router.get("/myExhibitions", verifyToken, async (req, res) => {
+    res.send({ success: true, data: [] })
 });
 
 module.exports = router;

@@ -42,7 +42,24 @@ const conditionBassedReadOne = (tableName, lhs, condition, rhs, lhs2, condition2
     })
 }
 
+const batchCreate = (tableName, data) => {
+    //data is expected to be array of objects
+    return new Promise((resolve) => {
+        var batch = db.batch()
+        data.forEach((doc) => {
+            var docRef = db.collection(tableName).doc(); //automatically generate unique id
+            batch.set(docRef, doc);
+        });
+        batch.commit().then(() => {
+            resolve({ success: true, data: {}, message: "Records created successfully" })
+        }).catch(err => {
+            resolve({ success: false, message: `${err}` })
+        });
+    })
+}
+
 module.exports = {
     create,
-    conditionBassedReadOne
+    conditionBassedReadOne,
+    batchCreate
 }
