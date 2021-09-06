@@ -27,5 +27,13 @@ export const useCatalogStyles = makeStyles((theme) => ({
         color: "#fff",
         opacity: 0.8,
         backgroundColor: "#E8E8E8"
+    },
+    slide: {
+        textAlign: "center",
+        background: "#fff",
+        padding: 20
+    },
+    banner: {
+        height: "100%"
     }
 }))
