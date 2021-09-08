@@ -39,8 +39,7 @@ export const useAuthenticationStyles = makeStyles((theme) => ({
     circleIcon: {
         width: iconDimension,
         height: iconDimension,
-        borderRadius: iconDimension / 2,
-        border: "1px solid #DCDCDC",
+        borderRadius: iconDimension / 2
     },
     iconContainer: {
         display: "flex",

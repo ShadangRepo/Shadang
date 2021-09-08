@@ -4,7 +4,7 @@ const db = firebase.firestore();
 const create = (tableName, data) => {
     return new Promise((resolve) => {
         const collection = db.collection(tableName);
-        collection.add(data).then(docRef => {
+        collection.add({ ...data, createdAt: firebase.firestore.Timestamp.fromDate(new Date()) }).then(docRef => {
             docRef.get().then((querySnapshot) => {
                 resolve({ success: true, data: { id: docRef.id, ...querySnapshot.data() } })
             }).catch(error => {

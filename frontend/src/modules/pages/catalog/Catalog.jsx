@@ -1,14 +1,46 @@
-import { Grid, Typography } from "@material-ui/core";
-import React, { useContext, useState } from "react";
+import { Grid, Paper, Typography } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../common/AppContext";
 import { CircleAvatar } from "../../common/CircleAvatar";
 import { useCatalogStyles } from "./catalogStyles";
 import { Slide } from "react-slideshow-image";
 import "react-slideshow-image/dist/styles.css";
+import { proxyClient } from "../../shared/proxy-client";
+import { NotificationStatus } from "../../common/Notifications";
+import FavoriteBorderOutlinedIcon from "@material-ui/icons/FavoriteBorderOutlined";
+import FavoriteOutlinedIcon from "@material-ui/icons/FavoriteOutlined";
 
 const Catalog = () => {
   const classes = useCatalogStyles();
-  const { isMobile } = useContext(AppContext);
+  const { isMobile, queueNotification } = useContext(AppContext);
+  const [exhibitions, setExhibitions] = useState([]);
+  const [exhibitionItems, setExhibitionItems] = useState([]);
+
+  const getExhibitionImages = async () => {
+    try {
+      const query = await proxyClient.get("/exhibitions/list");
+      const response = query.response;
+      if (response.success) {
+        let files = response.data.exhibitionFiles.map((item) => ({
+          ...item,
+          liked: false,
+        }));
+        setExhibitionItems(files);
+        setExhibitions(response.data.exhibitions);
+      } else {
+        queueNotification({
+          status: NotificationStatus.Error,
+          message: response.message,
+        });
+      }
+    } catch (err) {
+      queueNotification(err);
+    }
+  };
+
+  useEffect(() => {
+    getExhibitionImages();
+  }, []);
   // const [selectedCategory, setSelectedCategory] = useState(1);
   // const [imageVisibility, setImageVilibility] = useState(false);
   // const categoryArray = [
@@ -44,6 +76,18 @@ const Catalog = () => {
     "https://firebasestorage.googleapis.com/v0/b/shadang-63a81.appspot.com/o/images%2FShadang%2Fshadang_logo_2.png?alt=media&token=2cd49fad-feff-4648-a925-373fc9079150",
   ];
 
+  const handleLikeClick = (id) => {
+    let files = exhibitionItems.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            liked: !item.liked,
+          }
+        : item
+    );
+    setExhibitionItems(files);
+  };
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -62,6 +106,31 @@ const Catalog = () => {
             </Slide>
           </div>
         </div>
+      </Grid>
+      <Grid item xs={12} className={classes.exhibitionItemsRoot}>
+        {exhibitionItems &&
+          exhibitionItems.map((item) => (
+            <Paper key={item.id} className={classes.exhibitionItemContainer}>
+              <div className={classes.imageContainer}>
+                <img style={{ height: "100%" }} src={item.url} alt="picture" />
+              </div>
+              <hr className={classes.hr} />
+              <div className={classes.imageOptionsContainer}>
+                {item.liked ? (
+                  <FavoriteOutlinedIcon
+                    style={{ fill: "#f00" }}
+                    fontSize="large"
+                    onClick={() => handleLikeClick(item.id)}
+                  />
+                ) : (
+                  <FavoriteBorderOutlinedIcon
+                    fontSize="large"
+                    onClick={() => handleLikeClick(item.id)}
+                  />
+                )}
+              </div>
+            </Paper>
+          ))}
       </Grid>
       {/* <Grid item xs={12} className={classes.categoryList}>
         {categoryArray.map((category, i) => (

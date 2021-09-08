@@ -120,7 +120,7 @@ const Login = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} className={classes.iconContainer}>
               <img
-                src="/images/logo_temp.png"
+                src="/images/shadang_logo.png"
                 alt="logo"
                 className={classes.circleIcon}
               />

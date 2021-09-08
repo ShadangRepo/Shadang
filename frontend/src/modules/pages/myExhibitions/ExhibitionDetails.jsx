@@ -69,8 +69,8 @@ const ExhibitionDetails = () => {
     setSaveStatus({ hasSaved: true, isSaving: true });
     let payload = {
       ...exhibitionDetails,
-      startDate: moment(exhibitionDetails.startDate).format("DD/MM/YYYY"),
-      endDate: moment(exhibitionDetails.endDate).format("DD/MM/YYYY"),
+      startDate: new Date(exhibitionDetails.startDate).getTime(),
+      endDate: new Date(exhibitionDetails.endDate).getTime(),
     };
 
     try {

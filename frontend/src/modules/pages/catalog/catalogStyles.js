@@ -35,5 +35,43 @@ export const useCatalogStyles = makeStyles((theme) => ({
     },
     banner: {
         height: "100%"
+    },
+    exhibitionItemContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 40,
+        width: "75%",
+        [theme.breakpoints.down("sm")]: {
+            width: "90%"
+        },
+        padding: 20
+    },
+    exhibitionItemsRoot: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column"
+    },
+    imageOptionsContainer: {
+        display: "flex",
+        alignItems: "center",
+        height: 40,
+        width: "calc(100% - 36px)"
+    },
+    imageContainer: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "calc(100% - 36px)",
+        padding: 20,
+        height: 300,
+        [theme.breakpoints.down("sm")]: {
+            height: 150
+        },
+    },
+    hr: {
+        width: "100%"
     }
 }))

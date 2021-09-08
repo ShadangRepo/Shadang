@@ -60,6 +60,7 @@ router.post("/signup", async (req, res) => {
                 res.send({ success: false, message: "This Email is already taken" });
             } else {
                 body.password = await encryptPassword(body.password)
+                body.createdAt = new Date().getTime();
                 const response = await dbHandler.create(TableName.users, body)
                 delete response.data.password;
                 const token = jwt.sign(

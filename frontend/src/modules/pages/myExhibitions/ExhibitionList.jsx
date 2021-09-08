@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router";
 import { AppContext } from "../../common/AppContext";
@@ -21,7 +22,12 @@ const ExhibitionList = () => {
       const query = await proxyClient.get("/exhibitions/myExhibitions");
       const response = query.response;
       if (response.success) {
-        setExhibitions(response.data);
+        let formattedResponse = response.data.map((item) => ({
+          ...item,
+          startDate: moment(item.startDate).format("DD/MM/YYYY"),
+          endDate: moment(item.endDate).format("DD/MM/YYYY"),
+        }));
+        setExhibitions(formattedResponse);
       } else {
         queueNotification({
           status: NotificationStatus.Error,
