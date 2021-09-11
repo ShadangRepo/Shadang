@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
         delete decoded.exp;
         req.decodedUser = decoded;
     } catch (err) {
-        return res.send({ success: false, message: "Token expired" });
+        return res.send({ success: false, message: constants.TokenExpiredMessage });
     }
     return next();
 };

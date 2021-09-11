@@ -20,8 +20,10 @@ import { useGlobalStyles } from "../../shared/globalStyles";
 import { useHistory } from "react-router-dom";
 import { PhoneField } from "../../common/MaskedInputs";
 import { proxyClient } from "../../shared/proxy-client";
-import { setTokenToLocalStorage } from "../../preferences/userPreferences";
-// eslint-disable-next-line no-useless-escape
+import {
+  setTokenToLocalStorage,
+  setRefreshTokenToLocalStorage,
+} from "../../preferences/userPreferences";
 var specialCharacterRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
 const Signup = () => {
@@ -109,6 +111,7 @@ const Signup = () => {
       setSaveStatus({ hasSaved: true, isSaving: false });
       if (response.success && response.data && response.data.token) {
         setTokenToLocalStorage(response.data.token);
+        setRefreshTokenToLocalStorage(response.data.refreshToken);
         await getUserDetailsFromApi();
         history.push("/");
       } else {

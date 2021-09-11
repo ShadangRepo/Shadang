@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { AppContext } from '../common/AppContext';
-import { Config } from './constants';
+import { clearRefreshTokenFromLocalStorage, clearTokenFromLocalStorage, setRefreshTokenToLocalStorage, setTokenToLocalStorage } from '../preferences/userPreferences';
+import { Config, RefreshTokenExpiredMessage, TokenExpiredMessage } from './constants';
 
 const getHeader = ({ headerName, headers }) => {
     const header = Object.keys(headers).find(key => key.toLowerCase() === headerName.toLowerCase());
@@ -11,17 +12,21 @@ const getHeader = ({ headerName, headers }) => {
 
 class ProxyClient {
     getToken = null;
+    getRefreshToken = null;
     callsCount = 0;
     endCallTimer = null;
     apiUrl = "/";
+    setUser = null;
 
-    constructor({ getToken }) {
+    constructor({ getToken, getRefreshToken }) {
         this.getToken = getToken;
+        this.getRefreshToken = getRefreshToken;
     }
 
-    configure = ({ startCallback, endCallback }) => {
+    configure = ({ startCallback, endCallback, setUser }) => {
         this.startCallback = startCallback;
         this.endCallback = endCallback;
+        this.setUser = setUser;
     };
     startCall = () => {
         if (!this.startCallback) return;
@@ -82,7 +87,8 @@ class ProxyClient {
         }
     }
 
-    async _call(method, uri, body, { blob, formData, noAuth, directCall } = {}) {
+    async _call(method, uri, body, cfg) {
+        const { blob, formData, noAuth, directCall } = cfg || {};
         this._cleanStrings(body);
         this.startCall();
         const source = await axios.CancelToken.source();
@@ -111,7 +117,7 @@ class ProxyClient {
                 cancelToken: source.token,
                 responseType: blob ? 'arraybuffer' : 'json',
             })
-                .then(({ data, headers }) => {
+                .then(async ({ data, headers }) => {
                     if (blob) {
                         let filename = 'file';
                         const contentDisposition = getHeader({ headerName: 'Content-Disposition', headers });
@@ -139,7 +145,37 @@ class ProxyClient {
                         document.body.appendChild(link);
                         link.click();
                     } else {
-                        return data;
+                        //get fresh token if current token expired 
+                        if (data.success === false && data.message === RefreshTokenExpiredMessage) {
+                            // clear context and local strorage if refresh token expired
+                            clearRefreshTokenFromLocalStorage();
+                            this.setUser(null);
+                            return data;
+                        }
+                        else if (data.success === false && data.message === TokenExpiredMessage) {
+                            //save details to make call again with fresh token
+                            let previousCallDetails = {
+                                method,
+                                uri,
+                                body,
+                                cfg
+                            }
+                            clearTokenFromLocalStorage();
+                            let refreshQuery = await this._call('POST', "/auth/getFreshToken", { refreshToken: this.getRefreshToken() }, { noAuth: true });
+                            let refreshResponse = refreshQuery.response
+                            if (refreshResponse.success && refreshResponse.data) {
+                                setTokenToLocalStorage(refreshResponse.data.token);
+                                setRefreshTokenToLocalStorage(refreshResponse.data.refreshToken);
+                                let repeatCallQuery = await this._call(previousCallDetails.method, previousCallDetails.uri, previousCallDetails.body, previousCallDetails.cfg);
+                                let repeatCallResponse = repeatCallQuery.response;
+                                return repeatCallResponse;
+                            } else {
+                                return refreshResponse;
+                            }
+
+                        } else {
+                            return data;
+                        }
                     }
                 })
                 .catch(err => {

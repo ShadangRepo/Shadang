@@ -1,4 +1,4 @@
-import { getTokenFromLocalStorage } from "../preferences/userPreferences"
+import { getRefreshTokenFromLocalStorage, getTokenFromLocalStorage } from "../preferences/userPreferences"
 
 const getToken = () => {
     const token = getTokenFromLocalStorage();
@@ -10,4 +10,15 @@ const getToken = () => {
     }
 }
 
-export { getToken }
+const getRefreshToken = () => {
+    const token = getRefreshTokenFromLocalStorage();
+    if (token) {
+        return token;
+    }
+    else {
+        return null;
+    }
+}
+
+
+export { getToken, getRefreshToken }

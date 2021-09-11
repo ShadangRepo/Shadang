@@ -27,7 +27,14 @@ router.post("/login", async (req, res) => {
                             expiresIn: "1h",
                         }
                     );
-                    res.send({ success: true, data: { token } })
+                    const refreshToken = jwt.sign(
+                        response.data,
+                        constants.REFRESH_TOKEN_KEY,
+                        {
+                            expiresIn: "30d",
+                        }
+                    );
+                    res.send({ success: true, data: { token, refreshToken } })
                 } else {
                     res.send({ success: false, message: "Invalid password" })
                 }
@@ -70,7 +77,14 @@ router.post("/signup", async (req, res) => {
                         expiresIn: "1h",
                     }
                 );
-                res.send({ success: true, data: { token } });
+                const refreshToken = jwt.sign(
+                    response.data,
+                    constants.REFRESH_TOKEN_KEY,
+                    {
+                        expiresIn: "30d",
+                    }
+                );
+                res.send({ success: true, data: { token, refreshToken } });
             }
         }
     } catch (error) {
@@ -82,7 +96,37 @@ router.get("/getUserDetails", verifyToken, async (req, res) => {
     if (req.decodedUser) {
         res.send({ success: true, data: req.decodedUser })
     } else {
-        res.status(200).send({ success: false, message: "User details not found" })
+        res.send({ success: false, message: "User details not found" })
+    }
+});
+
+router.post("/getFreshToken", async (req, res) => {
+    let body = req.body;
+    if (body.refreshToken) {
+        try {
+            const decoded = jwt.verify(body.refreshToken, constants.REFRESH_TOKEN_KEY);
+            delete decoded.iat;
+            delete decoded.exp;
+            const token = jwt.sign(
+                decoded,
+                constants.TOKEN_KEY,
+                {
+                    expiresIn: "1h",
+                }
+            );
+            const refreshToken = jwt.sign(
+                decoded,
+                constants.REFRESH_TOKEN_KEY,
+                {
+                    expiresIn: "30d",
+                }
+            );
+            res.send({ success: true, data: { token, refreshToken } });
+        } catch (err) {
+            res.send({ success: false, message: constants.RefreshTokenExpiredMessage });
+        }
+    } else {
+        res.send({ success: false, message: "Refresh Token is required" })
     }
 })
 

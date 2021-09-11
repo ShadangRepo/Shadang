@@ -34,16 +34,17 @@ const ThemeWrapper = ({ classes, children }) => {
 
   useEffect(() => {
     const { current: loadingBar } = loadingBarRef;
-    if (!loadingBar) return;
-    setLoader(loadingBar);
-    const { continuousStart, complete } = loadingBar;
-    proxyClient.configure({
-      startCallback: continuousStart,
-      endCallback: () => {
+    let configOptions = { setUser };
+    if (loadingBar) {
+      const { continuousStart, complete } = loadingBar;
+      configOptions.startCallback = continuousStart;
+      configOptions.endCallback = () => {
         const { state: { progress = 0 } = {} } = loadingBar;
         if (progress) complete();
-      },
-    });
+      };
+    }
+    setLoader(loadingBar);
+    proxyClient.configure(configOptions);
   }, []);
 
   // useEffect(() => {

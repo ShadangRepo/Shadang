@@ -5,4 +5,9 @@ const Config = {
 
 const BrandName = "Shadang";
 
-export { Config, BrandName }
+const TokenName = "sec_toc"; //sec_toc stands for secret token
+const RefreshTokenName = "sec_ref_toc"; //sec_ref_toc stands for secret refresh token
+const TokenExpiredMessage = "Token expired";
+const RefreshTokenExpiredMessage = "Refresh token expired";
+
+export { Config, BrandName, TokenName, RefreshTokenName, TokenExpiredMessage, RefreshTokenExpiredMessage };

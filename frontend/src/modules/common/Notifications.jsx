@@ -75,11 +75,6 @@ const useNotifications = () => {
         notification = StandardMessages[StandardMessageTypes.GenericError];
     }
 
-    //need to change this logic with refresh token
-    if (notification.status === 2 && notification.message === "Token expired") {
-      clearTokenFromLocalStorage();
-    }
-
     const { message = "" } = notification || {};
     if (!message) return;
     notification.id = "_" + Math.random().toString(36).substr(2, 9);

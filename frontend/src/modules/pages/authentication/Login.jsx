@@ -19,7 +19,10 @@ import { useAuthenticationStyles } from "./authenticationStyles";
 import { useGlobalStyles } from "../../shared/globalStyles";
 import { useHistory } from "react-router-dom";
 import { proxyClient } from "../../shared/proxy-client";
-import { setTokenToLocalStorage } from "../../preferences/userPreferences";
+import {
+  setTokenToLocalStorage,
+  setRefreshTokenToLocalStorage,
+} from "../../preferences/userPreferences";
 import queryString from "query-string";
 
 const Login = () => {
@@ -85,6 +88,7 @@ const Login = () => {
         if (response.success && response.data) {
           if (response.data.token) {
             setTokenToLocalStorage(response.data.token);
+            setRefreshTokenToLocalStorage(response.data.refreshToken);
           }
           await getUserDetailsFromApi();
           queueNotification({
