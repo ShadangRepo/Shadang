@@ -98,7 +98,7 @@ router.get("/getUserDetails", verifyToken, async (req, res) => {
         if (!response.success && response.message === constants.DocumentNotExistMessage) {
             res.send({ success: false, message: "User does not exist" });
         } else if (response.success && response.data) {
-            delete response.data.password
+            delete response.data.password;
             res.send(response)
         } else {
             res.send(response)

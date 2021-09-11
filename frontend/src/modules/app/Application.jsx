@@ -17,8 +17,8 @@ const Application = () => {
           path="/"
           render={(props) => <Redirect to={"/catalog"} />}
         />
-        <Route path="/catalog" component={Catalog} />
-        <Route path="/dashboard" component={Dashboard} />
+        <ProtectedRoute path="/catalog" component={Catalog} />
+        <ProtectedRoute path="/dashboard" component={Dashboard} />
         <ProtectedRoute path="/user-profile" component={UserProfile} />
         <ProtectedRoute path="/my-exhibitions" component={MyExhibitions} />
         <Route component={NotFound} />

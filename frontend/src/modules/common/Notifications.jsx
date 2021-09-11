@@ -5,7 +5,6 @@ import IconButton from "@material-ui/core/IconButton";
 import { withStyles } from "@material-ui/core/styles";
 import Portal from "@material-ui/core/Portal";
 import { AppContext } from "./AppContext";
-import { clearTokenFromLocalStorage } from "../preferences/userPreferences";
 
 const styles = (theme) => ({
   actionDefault: {

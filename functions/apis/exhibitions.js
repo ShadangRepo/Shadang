@@ -3,12 +3,11 @@ const dbHandler = require('../firebase/dbHandler');
 const constants = require('../utils/constants');
 const TableName = constants.TableName;
 const router = express.Router();
-const verifyToken = require('../middleware/auth');
 const firebase = require("../firebase/firebaseConfig");
 const moment = require("moment");
 
 //exhibitions
-router.post("/create", verifyToken, async (req, res) => {
+router.post("/create", async (req, res) => {
     let body = req.body;
     let user = req.decodedUser;
     try {
@@ -43,7 +42,7 @@ router.post("/create", verifyToken, async (req, res) => {
     }
 });
 
-router.get("/myExhibitions", verifyToken, async (req, res) => {
+router.get("/myExhibitions", async (req, res) => {
     let user = req.decodedUser;
     try {
         const response = await dbHandler.conditionBassedReadAll(TableName.exhibitions, "createdBy", "==", user.id);
