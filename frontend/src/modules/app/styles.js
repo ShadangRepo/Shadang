@@ -8,6 +8,7 @@ export const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     appBody: {
-        padding: 20
+        padding: 20,
+        marginTop: 68
     }
 }))
