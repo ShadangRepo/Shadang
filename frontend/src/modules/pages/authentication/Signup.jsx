@@ -128,7 +128,43 @@ const Signup = () => {
   return (
     <Grid container>
       <Grid item container xs={12} className={classes.gradientBackground}>
-        {!isMobile && <Grid item xs={12} md={6}></Grid>}
+        {!isMobile && (
+          <Grid
+            item
+            xs={12}
+            md={6}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <Typography
+                variant="h1"
+                style={{ fontWeight: "bold", color: "white" }}
+              >
+                Shadang
+              </Typography>
+              <Typography
+                style={{
+                  fontWeight: "bold",
+                  color: "white",
+                  marginRight: 58,
+                  marginTop: -20,
+                }}
+              >
+                The digital art gallery
+              </Typography>
+            </div>
+          </Grid>
+        )}
         <Grid item xs={12} md={6} className={classes.credentialsContainer}>
           <Paper>
             <fieldset disabled={saveStatus.isSaving} style={{ border: "none" }}>
