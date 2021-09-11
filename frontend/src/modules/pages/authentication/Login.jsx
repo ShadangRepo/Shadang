@@ -1,11 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Grid,
-  TextField,
-  Card,
-  CardContent,
-  Typography,
-} from "@material-ui/core";
+import { Grid, TextField, Typography, Paper } from "@material-ui/core";
 import { LoaderButton } from "../../common/LoaderButton";
 import {
   NotificationStatus,
@@ -34,8 +28,8 @@ const Login = () => {
     isSaving: false,
     hasSaved: false,
   });
-  const [emailValid, setEmailValid] = useState(false);
-  const { queueNotification, getUserDetailsFromApi } = useContext(AppContext);
+  const { queueNotification, getUserDetailsFromApi, isMobile } =
+    useContext(AppContext);
   const [passwordVisibility, setPasseordVisibility] = useState(false);
   const history = useHistory();
   const { search } = history.location;
@@ -47,8 +41,7 @@ const Login = () => {
     if (!newData.email) newErrors.email = "Email is required";
     if (newData.email && emailValidator(newData.email))
       newErrors.email = "Please enter valid email address";
-    if (emailValid && !newData.password)
-      newErrors.password = "Password is required";
+    if (!newData.password) newErrors.password = "Password is required";
 
     const isInvalid = Object.keys(newErrors).length > 0;
     setErrors(newErrors);
@@ -69,47 +62,40 @@ const Login = () => {
     }
 
     setSaveStatus({ hasSaved: true, isSaving: true });
-    if (!emailValid) {
-      setTimeout(() => {
-        setSaveStatus({ hasSaved: true, isSaving: false });
-        setEmailValid(true);
-      }, 500);
-    } else {
-      let payload = {
-        email: formData.email,
-        password: formData.password,
-      };
-      try {
-        let query = await proxyClient.post("/auth/login", payload, {
-          noAuth: true,
-        });
-        const response = query.response;
-        setSaveStatus({ hasSaved: true, isSaving: false });
-        if (response.success && response.data) {
-          if (response.data.token) {
-            setTokenToLocalStorage(response.data.token);
-            setRefreshTokenToLocalStorage(response.data.refreshToken);
-          }
-          await getUserDetailsFromApi();
-          queueNotification({
-            status: NotificationStatus.Success,
-            message: "Login successful",
-          });
-          let redirectUrl = "/";
-          if (search) {
-            redirectUrl = queryString.parse(search).redirect;
-          }
-          history.push(redirectUrl);
-        } else {
-          queueNotification({
-            status: NotificationStatus.Error,
-            message: response.message,
-          });
+    let payload = {
+      email: formData.email,
+      password: formData.password,
+    };
+    try {
+      let query = await proxyClient.post("/auth/login", payload, {
+        noAuth: true,
+      });
+      const response = query.response;
+      setSaveStatus({ hasSaved: true, isSaving: false });
+      if (response.success && response.data) {
+        if (response.data.token) {
+          setTokenToLocalStorage(response.data.token);
+          setRefreshTokenToLocalStorage(response.data.refreshToken);
         }
-      } catch (err) {
-        queueNotification(err);
-        setSaveStatus({ hasSaved: true, isSaving: false });
+        await getUserDetailsFromApi();
+        queueNotification({
+          status: NotificationStatus.Success,
+          message: "Login successful",
+        });
+        let redirectUrl = "/";
+        if (search) {
+          redirectUrl = queryString.parse(search).redirect;
+        }
+        history.push(redirectUrl);
+      } else {
+        queueNotification({
+          status: NotificationStatus.Error,
+          message: response.message,
+        });
       }
+    } catch (err) {
+      queueNotification(err);
+      setSaveStatus({ hasSaved: true, isSaving: false });
     }
   };
 
@@ -118,105 +104,101 @@ const Login = () => {
   };
 
   return (
-    <Card className={classes.root}>
-      <CardContent>
-        <fieldset disabled={saveStatus.isSaving} style={{ border: "none" }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} className={classes.iconContainer}>
-              <img
-                src="/images/shadang_logo.png"
-                alt="logo"
-                className={classes.circleIcon}
-              />
-            </Grid>
-            <Grid item xs={12} className={globalClasses.marginTop30}>
-              <TextField
-                name="email"
-                label="Email"
-                required
-                fullWidth
-                variant="outlined"
-                value={formData.email}
-                onChange={(event) =>
-                  updateFields({ email: event.target.value })
-                }
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              className={`${classes.hiddenPassword} ${
-                emailValid ? classes.showPasswordField : ""
-              }`}
-            >
-              <TextField
-                name="password"
-                label="Password"
-                required
-                fullWidth
-                type={passwordVisibility ? "text" : "password"}
-                InputProps={{
-                  endAdornment: passwordVisibility ? (
-                    <VisibilityOffIcon
-                      onClick={() => setPasseordVisibility(false)}
-                      className={classes.passwordToggle}
-                    />
-                  ) : (
-                    <VisibilityIcon
-                      onClick={() => setPasseordVisibility(true)}
-                      className={classes.passwordToggle}
-                    />
-                  ),
-                }}
-                variant="outlined"
-                value={formData.password}
-                onChange={(event) =>
-                  updateFields({ password: event.target.value })
-                }
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              className={`${classes.rowReverse} ${classes.btnContainer}`}
-            >
-              <LoaderButton
-                loading={saveStatus.isSaving}
-                onClick={handleSubmit}
-              >
-                {emailValid ? "Login" : "Next"}
-              </LoaderButton>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              className={`${classes.centerAligned} ${globalClasses.marginTop30}`}
-            >
-              <Typography className={globalClasses.link}>
-                Forgot password?
-              </Typography>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              className={`${classes.centerAligned} ${globalClasses.marginTop20}`}
-            >
-              <Typography>New to Shadang?</Typography>
-              <Typography
-                className={globalClasses.link}
-                onClick={navigateSignup}
-              >
-                Signup
-              </Typography>
-            </Grid>
-          </Grid>
-        </fieldset>
-      </CardContent>
-    </Card>
+    <Grid container>
+      <Grid item container xs={12} className={classes.gradientBackground}>
+        {!isMobile && <Grid item xs={12} md={6}></Grid>}
+        <Grid item xs={12} md={6} className={classes.credentialsContainer}>
+          <Paper>
+            <fieldset disabled={saveStatus.isSaving} style={{ border: "none" }}>
+              <Grid container spacing={2} className={classes.form}>
+                <Grid item xs={12} className={classes.iconContainer}>
+                  <img
+                    src="/images/shadang_logo.png"
+                    alt="logo"
+                    className={classes.circleIcon}
+                  />
+                </Grid>
+                <Grid item xs={12} className={globalClasses.marginTop30}>
+                  <TextField
+                    name="email"
+                    label="Email"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    value={formData.email}
+                    onChange={(event) =>
+                      updateFields({ email: event.target.value })
+                    }
+                    error={!!errors.email}
+                    helperText={errors.email}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="password"
+                    label="Password"
+                    required
+                    fullWidth
+                    type={passwordVisibility ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: passwordVisibility ? (
+                        <VisibilityOffIcon
+                          onClick={() => setPasseordVisibility(false)}
+                          className={classes.passwordToggle}
+                        />
+                      ) : (
+                        <VisibilityIcon
+                          onClick={() => setPasseordVisibility(true)}
+                          className={classes.passwordToggle}
+                        />
+                      ),
+                    }}
+                    variant="outlined"
+                    value={formData.password}
+                    onChange={(event) =>
+                      updateFields({ password: event.target.value })
+                    }
+                    error={!!errors.password}
+                    helperText={errors.password}
+                  />
+                </Grid>
+                <Grid item xs={12} className={globalClasses.marginTop30}>
+                  <LoaderButton
+                    loading={saveStatus.isSaving}
+                    onClick={handleSubmit}
+                    fullWidth
+                  >
+                    Login
+                  </LoaderButton>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  className={`${classes.centerAligned} ${globalClasses.marginTop30}`}
+                >
+                  <Typography className={globalClasses.link}>
+                    Forgot password?
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  className={`${classes.centerAligned} ${globalClasses.marginTop20}`}
+                >
+                  <Typography>New to Shadang?</Typography>
+                  <Typography
+                    className={globalClasses.link}
+                    onClick={navigateSignup}
+                  >
+                    Signup
+                  </Typography>
+                </Grid>
+              </Grid>
+            </fieldset>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 

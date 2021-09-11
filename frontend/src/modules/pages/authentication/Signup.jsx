@@ -1,11 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  Grid,
-  TextField,
-  Card,
-  CardContent,
-  Typography,
-} from "@material-ui/core";
+import { Grid, TextField, Typography, Paper } from "@material-ui/core";
 import { LoaderButton } from "../../common/LoaderButton";
 import {
   NotificationStatus,
@@ -35,7 +29,8 @@ const Signup = () => {
     isSaving: false,
     hasSaved: false,
   });
-  const { queueNotification, getUserDetailsFromApi } = useContext(AppContext);
+  const { queueNotification, getUserDetailsFromApi, isMobile } =
+    useContext(AppContext);
   const [passwordVisibility, setPasseordVisibility] = useState(false);
   const history = useHistory();
 
@@ -131,152 +126,154 @@ const Signup = () => {
   };
 
   return (
-    <Card className={classes.rootSignup}>
-      <CardContent>
-        <fieldset disabled={saveStatus.isSaving} style={{ border: "none" }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} className={classes.iconContainer}>
-              <img
-                src="/images/shadang_logo.png"
-                alt="logo"
-                className={classes.circleIcon}
-              />
-            </Grid>
-            <Grid item xs={12} className={globalClasses.marginTop30}>
-              <TextField
-                name="firstName"
-                label="First Name"
-                required
-                fullWidth
-                variant="outlined"
-                value={formData.firstName}
-                onChange={(event) =>
-                  updateFields({ firstName: event.target.value })
-                }
-                error={!!errors.firstName}
-                helperText={errors.firstName}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="lastName"
-                label="Last Name"
-                required
-                fullWidth
-                variant="outlined"
-                value={formData.lastName}
-                onChange={(event) =>
-                  updateFields({ lastName: event.target.value })
-                }
-                error={!!errors.lastName}
-                helperText={errors.lastName}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="email"
-                label="Email"
-                required
-                fullWidth
-                variant="outlined"
-                value={formData.email}
-                onChange={(event) =>
-                  updateFields({ email: event.target.value })
-                }
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="contact"
-                label="Contact number"
-                required
-                fullWidth
-                variant="outlined"
-                value={formData.contact}
-                onChange={(event) =>
-                  updateFields({ contact: event.target.value })
-                }
-                error={!!errors.contact}
-                helperText={errors.contact}
-                InputProps={{ inputComponent: PhoneField }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="password"
-                label="Password"
-                required
-                fullWidth
-                type={passwordVisibility ? "text" : "password"}
-                InputProps={{
-                  endAdornment: passwordVisibility ? (
-                    <VisibilityOffIcon
-                      onClick={() => setPasseordVisibility(false)}
-                      className={classes.passwordToggle}
-                    />
-                  ) : (
-                    <VisibilityIcon
-                      onClick={() => setPasseordVisibility(true)}
-                      className={classes.passwordToggle}
-                    />
-                  ),
-                }}
-                variant="outlined"
-                value={formData.password}
-                onChange={(event) =>
-                  updateFields({ password: event.target.value })
-                }
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="confirmPassword"
-                label="Confirm Password"
-                required
-                fullWidth
-                type="password"
-                variant="outlined"
-                value={formData.confirmPassword}
-                onChange={(event) =>
-                  updateFields({ confirmPassword: event.target.value })
-                }
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              className={`${classes.rowReverse} ${classes.btnContainer}`}
-            >
-              <LoaderButton
-                loading={saveStatus.isSaving}
-                onClick={handleSubmit}
-              >
-                Signup
-              </LoaderButton>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              className={`${classes.centerAligned} ${globalClasses.marginTop20}`}
-            >
-              <Typography>Already have account?</Typography>
-              <Typography
-                className={globalClasses.link}
-                onClick={navigateLogin}
-              >
-                Login
-              </Typography>
-            </Grid>
-          </Grid>
-        </fieldset>
-      </CardContent>
-    </Card>
+    <Grid container>
+      <Grid item container xs={12} className={classes.gradientBackground}>
+        {!isMobile && <Grid item xs={12} md={6}></Grid>}
+        <Grid item xs={12} md={6} className={classes.credentialsContainer}>
+          <Paper>
+            <fieldset disabled={saveStatus.isSaving} style={{ border: "none" }}>
+              <Grid container spacing={2} className={classes.form}>
+                <Grid item xs={12} className={classes.iconContainer}>
+                  <img
+                    src="/images/shadang_logo.png"
+                    alt="logo"
+                    className={classes.circleIcon}
+                  />
+                </Grid>
+                <Grid item xs={12} className={globalClasses.marginTop20}>
+                  <TextField
+                    name="firstName"
+                    label="First Name"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    value={formData.firstName}
+                    onChange={(event) =>
+                      updateFields({ firstName: event.target.value })
+                    }
+                    error={!!errors.firstName}
+                    helperText={errors.firstName}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="lastName"
+                    label="Last Name"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    value={formData.lastName}
+                    onChange={(event) =>
+                      updateFields({ lastName: event.target.value })
+                    }
+                    error={!!errors.lastName}
+                    helperText={errors.lastName}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="email"
+                    label="Email"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    value={formData.email}
+                    onChange={(event) =>
+                      updateFields({ email: event.target.value })
+                    }
+                    error={!!errors.email}
+                    helperText={errors.email}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="contact"
+                    label="Contact number"
+                    required
+                    fullWidth
+                    variant="outlined"
+                    value={formData.contact}
+                    onChange={(event) =>
+                      updateFields({ contact: event.target.value })
+                    }
+                    error={!!errors.contact}
+                    helperText={errors.contact}
+                    InputProps={{ inputComponent: PhoneField }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="password"
+                    label="Password"
+                    required
+                    fullWidth
+                    type={passwordVisibility ? "text" : "password"}
+                    InputProps={{
+                      endAdornment: passwordVisibility ? (
+                        <VisibilityOffIcon
+                          onClick={() => setPasseordVisibility(false)}
+                          className={classes.passwordToggle}
+                        />
+                      ) : (
+                        <VisibilityIcon
+                          onClick={() => setPasseordVisibility(true)}
+                          className={classes.passwordToggle}
+                        />
+                      ),
+                    }}
+                    variant="outlined"
+                    value={formData.password}
+                    onChange={(event) =>
+                      updateFields({ password: event.target.value })
+                    }
+                    error={!!errors.password}
+                    helperText={errors.password}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    required
+                    fullWidth
+                    type="password"
+                    variant="outlined"
+                    value={formData.confirmPassword}
+                    onChange={(event) =>
+                      updateFields({ confirmPassword: event.target.value })
+                    }
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword}
+                  />
+                </Grid>
+                <Grid item xs={12} className={globalClasses.marginTop30}>
+                  <LoaderButton
+                    loading={saveStatus.isSaving}
+                    onClick={handleSubmit}
+                    fullWidth
+                  >
+                    Signup
+                  </LoaderButton>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  className={`${classes.centerAligned} ${globalClasses.marginTop20}`}
+                >
+                  <Typography>Already have account?</Typography>
+                  <Typography
+                    className={globalClasses.link}
+                    onClick={navigateLogin}
+                  >
+                    Login
+                  </Typography>
+                </Grid>
+              </Grid>
+            </fieldset>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 

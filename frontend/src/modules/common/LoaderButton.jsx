@@ -2,9 +2,6 @@ import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
-  loadingButton: {
-    backgroundColor: "#0000ff",
-  },
   loader: {
     color: "#fff",
   },
@@ -18,7 +15,6 @@ const LoaderButton = (props) => {
       variant="contained"
       color="primary"
       onClick={onClick}
-      className={classes.loadingButton}
       fullWidth={fullWidth}
       disabled={disabled || loading}
     >
