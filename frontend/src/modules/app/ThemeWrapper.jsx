@@ -9,6 +9,10 @@ import {
 import { useMediaQuery, useTheme, withStyles } from "@material-ui/core";
 import { getToken } from "../shared/tokenConfig";
 import { proxyClient } from "../shared/proxy-client";
+import {
+  clearRefreshTokenFromLocalStorage,
+  clearTokenFromLocalStorage,
+} from "../preferences/userPreferences";
 
 const styles = {
   root: {
@@ -77,6 +81,8 @@ const ThemeWrapper = ({ classes, children }) => {
       if (response.success && response.data) {
         setUser(response.data);
       } else {
+        clearTokenFromLocalStorage();
+        clearRefreshTokenFromLocalStorage();
         queueNotification({
           status: NotificationStatus.Error,
           message: response.message,

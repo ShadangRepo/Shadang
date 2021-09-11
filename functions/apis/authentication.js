@@ -94,7 +94,15 @@ router.post("/signup", async (req, res) => {
 
 router.get("/getUserDetails", verifyToken, async (req, res) => {
     if (req.decodedUser) {
-        res.send({ success: true, data: req.decodedUser })
+        const response = await dbHandler.readDocBasedOnId(TableName.users, req.decodedUser.id);
+        if (!response.success && response.message === constants.DocumentNotExistMessage) {
+            res.send({ success: false, message: "User does not exist" });
+        } else if (response.success && response.data) {
+            delete response.data.password
+            res.send(response)
+        } else {
+            res.send(response)
+        }
     } else {
         res.send({ success: false, message: "User details not found" })
     }

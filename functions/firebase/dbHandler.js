@@ -1,3 +1,4 @@
+const { DocumentNotExistMessage } = require("../utils/constants");
 const firebase = require("./firebaseConfig");
 const db = firebase.firestore();
 
@@ -14,6 +15,22 @@ const create = (tableName, data) => {
         }).catch(err => {
             resolve({ success: false, message: `${err}` })
         });
+    })
+}
+
+const readDocBasedOnId = async (tableName, id) => {
+    return new Promise(async (resolve) => {
+        try {
+            const query = db.collection(tableName).doc(id);
+            const doc = await query.get();
+            if (!doc.exists) {
+                resolve({ success: false, message: DocumentNotExistMessage })
+            } else {
+                resolve({ success: true, data: { id: doc.id, ...doc.data() } })
+            }
+        } catch (err) {
+            resolve({ success: false, message: `${err}` })
+        }
     })
 }
 
@@ -98,5 +115,6 @@ module.exports = {
     create,
     conditionBassedReadOne,
     batchCreate,
-    conditionBassedReadAll
+    conditionBassedReadAll,
+    readDocBasedOnId
 }

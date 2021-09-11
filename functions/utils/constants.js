@@ -8,11 +8,13 @@ const REFRESH_TOKEN_KEY = "e4FkfLkciE72EDSodvWb2Fidaio5F";
 
 const TokenExpiredMessage = "Token expired";
 const RefreshTokenExpiredMessage = "Refresh token expired";
+const DocumentNotExistMessage = "Document Not Exist";
 
 module.exports = {
     TableName,
     TOKEN_KEY,
     REFRESH_TOKEN_KEY,
     TokenExpiredMessage,
-    RefreshTokenExpiredMessage
+    RefreshTokenExpiredMessage,
+    DocumentNotExistMessage
 }
