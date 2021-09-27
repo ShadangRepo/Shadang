@@ -53,7 +53,8 @@ export const useCatalogStyles = makeStyles((theme) => ({
         overflow: "hidden",
         width: "75%",
         [theme.breakpoints.down("sm")]: {
-            width: "100%"
+            width: "100%",
+            height: 250
         },
     },
     doorText: {
@@ -75,6 +76,7 @@ export const useCatalogStyles = makeStyles((theme) => ({
         justifyContent: "center",
         [theme.breakpoints.down("sm")]: {
             fontSize: 18,
+            height: 36,
         },
     },
     doorLeft: {
@@ -121,6 +123,10 @@ export const useCatalogStyles = makeStyles((theme) => ({
         marginLeft: 10,
         width: 100,
         borderRadius: 10,
-        cursor: "pointer"
+        cursor: "pointer",
+        [theme.breakpoints.down("sm")]: {
+            fontSize: 12,
+            width: 80,
+        },
     }
 }))
