@@ -36,42 +36,91 @@ export const useCatalogStyles = makeStyles((theme) => ({
     banner: {
         height: "100%"
     },
-    exhibitionItemContainer: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 40,
-        width: "75%",
-        [theme.breakpoints.down("sm")]: {
-            width: "90%"
-        },
-        padding: 20
-    },
     exhibitionItemsRoot: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column"
     },
-    imageOptionsContainer: {
-        display: "flex",
-        alignItems: "center",
-        height: 40,
-        width: "calc(100% - 36px)"
+
+    exhibitionDoor: {
+        backgroundSize: "cover",
+        backgroundColor: "#fff",
+        height: 500,
+        border: "solid 3px #006baf",
+        textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
+        width: "75%",
+        [theme.breakpoints.down("sm")]: {
+            width: "100%"
+        },
     },
-    imageContainer: {
+    doorText: {
+        backgroundColor: "rgba(253,217,33,0.50)",
+        color: "#333",
+        fontSize: 24,
+        fontWeight: "bold",
+        height: 45,
+        border: "solid 1px rgba(0,0,0,0.15)",
+        borderWidth: "1px 0",
+        position: "absolute",
+        top: "50%",
+        padding: "0 0 0 20px",
+        left: "1px",
+        right: "1px",
+        marginTop: "-22.5px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "calc(100% - 36px)",
-        padding: 20,
-        height: 300,
         [theme.breakpoints.down("sm")]: {
-            height: 150
+            fontSize: 18,
         },
     },
-    hr: {
-        width: "100%"
+    doorLeft: {
+        position: "absolute",
+        left: "0%",
+        top: 0,
+        bottom: 0,
+        width: "50%",
+        transition: "1s ease-in-out",
+        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
+        background: "rgba(226,226,226,0.35)",
+        background: "-moz-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(226,226,226,0.35)), color-stop(50%, rgba(219,219,219,0.35)), color-stop(51%, rgba(209,209,209,0.35)), color-stop(100%, rgba(254,254,254,0.35)))",
+        background: "-webkit-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "-o-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "-ms-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "linear-gradient(135deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe', GradientType=1 )"
+    },
+    doorRight: {
+        position: "absolute",
+        right: "0%",
+        top: 0,
+        bottom: 0,
+        width: "50%",
+        transition: "1s ease-in-out",
+        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
+        background: "rgba(226,226,226,0.35)",
+        background: "-moz-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(226,226,226,0.35)), color-stop(50%, rgba(219,219,219,0.35)), color-stop(51%, rgba(209,209,209,0.35)), color-stop(100%, rgba(254,254,254,0.35)))",
+        background: "-webkit-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "-o-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "-ms-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "linear-gradient(135deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe', GradientType=1 )"
+    },
+    openText: {
+        position: "absolute",
+        top: "60%",
+        padding: 5,
+        backgroundColor: "#006400",
+        color: "#fff",
+        fontWeight: "bold",
+        marginLeft: 10,
+        width: 100,
+        borderRadius: 10,
+        cursor: "pointer"
     }
 }))

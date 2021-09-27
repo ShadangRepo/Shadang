@@ -72,21 +72,38 @@ router.get("/list", async (req, res) => {
                 ...item,
                 createdAt: item.createdAt.toDate(),
                 endDate: item.endDate.toDate(),
-                startDate: item.startDate.toDate()
+                startDate: item.startDate.toDate(),
+                isLive: moment(item.startDate.toDate()).isSameOrBefore(moment())
             }))
-            //get only files for those exhibitions, whose start date <= current dates
-            let exhibitionsForFilter = formattedExhibitions.filter(item => moment(item.startDate).isSameOrBefore(moment()))
-            let formattedExhibitionIds = exhibitionsForFilter.map(({ id }) => id);
-            // get all documents which has exhibitionId present in formattedExhibitionIds
-            const exhibitionFilesResponse = await dbHandler.conditionBassedReadAll(TableName.exhibitionFiles, "exhibitionId", "in", formattedExhibitionIds);
-            const filteredFiles = exhibitionFilesResponse.data.filter(item => item.active);
-            if (exhibitionFilesResponse.success) {
-                res.send({ ...exhibitionFilesResponse, data: { exhibitions: formattedExhibitions, exhibitionFiles: filteredFiles } })
-            } else {
-                res.send({ ...exhibitionFilesResponse, data: { exhibitions: formattedExhibitions, exhibitionFiles: [] }, message: exhibitionFilesResponse.message })
-            }
+            res.send({ ...exhibitionResponse, data: formattedExhibitions })
         } else {
             res.send(exhibitionResponse)
+        }
+    } catch (error) {
+        res.send({ success: false, message: `${error}` })
+    }
+});
+
+router.get("/items", async (req, res) => {
+    try {
+        if (req.query.exhibitionId) {
+            const exhibitionResponse = await dbHandler.readDocBasedOnId(TableName.exhibitions, req.query.exhibitionId);
+            if (!exhibitionResponse.success && exhibitionResponse.message === constants.DocumentNotExistMessage) {
+                res.send({ success: false, message: "Invalid exhibition id" });
+            } else if (exhibitionResponse.success && exhibitionResponse.data) {
+                let exhibitionData = { ...exhibitionResponse.data };
+                //check if exhibition is live
+                if (moment(exhibitionData.startDate.toDate()).isSameOrBefore(moment()) && moment(exhibitionData.endDate.toDate()).isSameOrAfter(moment())) {
+                    const exhibitionItemsResponse = await dbHandler.conditionBassedReadAll(TableName.exhibitionFiles, "exhibitionId", "==", req.query.exhibitionId);
+                    res.send(exhibitionItemsResponse)
+                } else {
+                    res.send({ success: false, message: `This exhibition is not runing now` })
+                }
+            } else {
+                res.send(exhibitionResponse);
+            }
+        } else {
+            res.send({ success: false, message: `Exhibition id is required` })
         }
     } catch (error) {
         res.send({ success: false, message: `${error}` })

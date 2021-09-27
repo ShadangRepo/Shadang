@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
                     res.send({ success: false, message: "Invalid password" })
                 }
             } else {
-                res.send({ success: false, message: "User not found" })
+                res.send(response)
             }
 
         }

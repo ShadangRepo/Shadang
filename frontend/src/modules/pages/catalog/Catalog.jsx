@@ -9,24 +9,21 @@ import { proxyClient } from "../../shared/proxy-client";
 import { NotificationStatus } from "../../common/Notifications";
 import FavoriteBorderOutlinedIcon from "@material-ui/icons/FavoriteBorderOutlined";
 import FavoriteOutlinedIcon from "@material-ui/icons/FavoriteOutlined";
+import { useHistory } from "react-router-dom";
 
 const Catalog = () => {
   const classes = useCatalogStyles();
   const { isMobile, queueNotification } = useContext(AppContext);
   const [exhibitions, setExhibitions] = useState([]);
-  const [exhibitionItems, setExhibitionItems] = useState([]);
+  const history = useHistory();
+  let waitForDoorOpen = null;
 
-  const getExhibitionImages = async () => {
+  const getExhibitionList = async () => {
     try {
       const query = await proxyClient.get("/exhibitions/list");
       const response = query.response;
       if (response.success) {
-        let files = response.data.exhibitionFiles.map((item) => ({
-          ...item,
-          liked: false,
-        }));
-        setExhibitionItems(files);
-        setExhibitions(response.data.exhibitions);
+        setExhibitions(response.data);
       } else {
         queueNotification({
           status: NotificationStatus.Error,
@@ -39,53 +36,34 @@ const Catalog = () => {
   };
 
   useEffect(() => {
-    getExhibitionImages();
+    getExhibitionList();
+    return () => {
+      clearTimeout(waitForDoorOpen);
+    };
   }, []);
-  // const [selectedCategory, setSelectedCategory] = useState(1);
-  // const [imageVisibility, setImageVilibility] = useState(false);
-  // const categoryArray = [
-  //   {
-  //     id: 1,
-  //     url: "https://picsum.photos/200/300/?blur",
-  //     name: "All",
-  //   },
-  //   {
-  //     id: 2,
-  //     url: "https://picsum.photos/id/237/200/300",
-  //     name: "Fassion",
-  //   },
-  //   {
-  //     id: 3,
-  //     // url: "https://picsum.photos/seed/picsum/200/300",
-  //     name: "Bonsai Tree",
-  //   },
-  //   {
-  //     id: 4,
-  //     url: "https://picsum.photos/200/300/?blur",
-  //     name: "Craft",
-  //   },
-  //   {
-  //     id: 5,
-  //     url: "https://picsum.photos/200/300/?blur=2",
-  //     name: "Exhibition",
-  //   },
-  // ];
 
   const bannerArray = [
     "https://firebasestorage.googleapis.com/v0/b/shadang-63a81.appspot.com/o/images%2FShadang%2Fshadang_banner_1.jpg?alt=media&token=22438fb2-8211-410d-af99-3d7eed489a4d",
     "https://firebasestorage.googleapis.com/v0/b/shadang-63a81.appspot.com/o/images%2FShadang%2Fshadang_logo_2.png?alt=media&token=2cd49fad-feff-4648-a925-373fc9079150",
   ];
 
-  const handleLikeClick = (id) => {
-    let files = exhibitionItems.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            liked: !item.liked,
-          }
-        : item
-    );
-    setExhibitionItems(files);
+  const openDoor = (id) => {
+    let leftDoor = document.getElementById(`left_${id}`);
+    let rightDoor = document.getElementById(`right_${id}`);
+
+    clearTimeout(waitForDoorOpen);
+    let isDoorOpen =
+      leftDoor.style.left === "-50%" && rightDoor.style.right === "-50%";
+    if (isDoorOpen) {
+      leftDoor.style.left = "0%";
+      rightDoor.style.right = "0%";
+    } else {
+      leftDoor.style.left = "-50%";
+      rightDoor.style.right = "-50%";
+      waitForDoorOpen = setTimeout(() => {
+        history.push(`/viewExhibition/${id}`);
+      }, 1000);
+    }
   };
 
   return (
@@ -93,7 +71,7 @@ const Catalog = () => {
       <Grid item xs={12}>
         <div>
           <div>
-            <Slide autoplay={true}>
+            <Slide autoplay={true} transitionDuration={500} duration={3000}>
               {bannerArray.map((item, i) => (
                 <div
                   key={`${i}`}
@@ -108,63 +86,25 @@ const Catalog = () => {
         </div>
       </Grid>
       <Grid item xs={12} className={classes.exhibitionItemsRoot}>
-        {exhibitionItems &&
-          exhibitionItems.map((item) => (
-            <Paper key={item.id} className={classes.exhibitionItemContainer}>
-              <div className={classes.imageContainer}>
-                <img style={{ height: "100%" }} src={item.url} alt="picture" />
+        {exhibitions &&
+          exhibitions.map((item) => (
+            <div
+              key={item.id}
+              className={classes.exhibitionDoor}
+              onClick={() => openDoor(item.id)}
+            >
+              <div className={classes.doorLeft} id={`left_${item.id}`}>
+                <Typography className={classes.doorText}>WelCome to</Typography>
               </div>
-              <hr className={classes.hr} />
-              <div className={classes.imageOptionsContainer}>
-                {item.liked ? (
-                  <FavoriteOutlinedIcon
-                    style={{ fill: "#f00" }}
-                    fontSize="large"
-                    onClick={() => handleLikeClick(item.id)}
-                  />
-                ) : (
-                  <FavoriteBorderOutlinedIcon
-                    fontSize="large"
-                    onClick={() => handleLikeClick(item.id)}
-                  />
-                )}
+              <div className={classes.doorRight} id={`right_${item.id}`}>
+                <Typography className={classes.doorText}>
+                  {item.title}
+                </Typography>
+                <Typography className={classes.openText}>Open</Typography>
               </div>
-            </Paper>
+            </div>
           ))}
       </Grid>
-      {/* <Grid item xs={12} className={classes.categoryList}>
-        {categoryArray.map((category, i) => (
-          <CircleAvatar
-            key={`${i}`}
-            url={category.url}
-            alt={category.name.substring(0, 2).toUpperCase()}
-            style={{ marginLeft: 10, marginRight: 10 }}
-            label={category.name}
-            selected={category.id === selectedCategory}
-            onClick={() => setSelectedCategory(category.id)}
-          />
-        ))}
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        className={classes.imagePreviewContainer}
-        onMouseOver={() => setImageVilibility(true)}
-        onMouseOut={() => setImageVilibility(false)}
-        onTouchStart={async () => setImageVilibility(true)}
-        onTouchEnd={async () => setImageVilibility(false)}
-      >
-        {!imageVisibility && (
-          <div className={classes.imageOverlay}>
-            Move cursor over to veiw image
-          </div>
-        )}
-        <img src="https://picsum.photos/id/237/200/300" alt="Image" />
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Typography>Name of atrist</Typography>
-      </Grid> */}
     </Grid>
   );
 };
