@@ -52,6 +52,7 @@ export const useCatalogStyles = makeStyles((theme) => ({
         position: "relative",
         overflow: "hidden",
         width: "75%",
+        marginTop: 20,
         [theme.breakpoints.down("sm")]: {
             width: "100%",
             height: 250
@@ -128,5 +129,18 @@ export const useCatalogStyles = makeStyles((theme) => ({
             fontSize: 12,
             width: 80,
         },
+    },
+    exhibitionStatusChip: {
+        position: "absolute",
+        bottom: 10,
+        right: 10
+    },
+    liveDot: {
+        color: `#f00 !important`,
+        backgroundColor: "#fff !important"
+    },
+    upcommingDot: {
+        color: `${theme.palette.primary.main} !important`,
+        backgroundColor: "#fff !important"
     }
 }))

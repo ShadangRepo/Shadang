@@ -1,15 +1,14 @@
-import { Grid, Paper, Typography } from "@material-ui/core";
+import { Chip, Grid, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../common/AppContext";
-import { CircleAvatar } from "../../common/CircleAvatar";
 import { useCatalogStyles } from "./catalogStyles";
 import { Slide } from "react-slideshow-image";
 import "react-slideshow-image/dist/styles.css";
 import { proxyClient } from "../../shared/proxy-client";
 import { NotificationStatus } from "../../common/Notifications";
-import FavoriteBorderOutlinedIcon from "@material-ui/icons/FavoriteBorderOutlined";
-import FavoriteOutlinedIcon from "@material-ui/icons/FavoriteOutlined";
 import { useHistory } from "react-router-dom";
+import FiberManualRecordOutlinedIcon from "@material-ui/icons/FiberManualRecordOutlined";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
 const Catalog = () => {
   const classes = useCatalogStyles();
@@ -88,11 +87,7 @@ const Catalog = () => {
       <Grid item xs={12} className={classes.exhibitionItemsRoot}>
         {exhibitions &&
           exhibitions.map((item) => (
-            <div
-              key={item.id}
-              className={classes.exhibitionDoor}
-              onClick={() => openDoor(item.id)}
-            >
+            <div key={item.id} className={classes.exhibitionDoor}>
               <div className={classes.doorLeft} id={`left_${item.id}`}>
                 <Typography className={classes.doorText}>WelCome to</Typography>
               </div>
@@ -100,7 +95,41 @@ const Catalog = () => {
                 <Typography className={classes.doorText}>
                   {item.title}
                 </Typography>
-                <Typography className={classes.openText}>Open</Typography>
+                {item.isLive && (
+                  <Typography
+                    className={classes.openText}
+                    onClick={() => openDoor(item.id)}
+                  >
+                    Open
+                  </Typography>
+                )}
+                {item.isLive ? (
+                  <Chip
+                    label="Live"
+                    variant="outlined"
+                    color="primary"
+                    className={classes.exhibitionStatusChip}
+                    avatar={
+                      <FiberManualRecordIcon
+                        color="primary"
+                        classes={{ colorPrimary: classes.liveDot }}
+                      />
+                    }
+                  />
+                ) : (
+                  <Chip
+                    label="Comming soon"
+                    variant="outlined"
+                    color="primary"
+                    className={classes.exhibitionStatusChip}
+                    avatar={
+                      <FiberManualRecordOutlinedIcon
+                        color="primary"
+                        classes={{ colorPrimary: classes.upcommingDot }}
+                      />
+                    }
+                  />
+                )}
               </div>
             </div>
           ))}

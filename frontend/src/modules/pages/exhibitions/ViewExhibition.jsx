@@ -29,6 +29,7 @@ const ViewExhibition = () => {
           status: NotificationStatus.Error,
           message: response.message,
         });
+        history.push("/");
       }
     } catch (err) {
       queueNotification(err);

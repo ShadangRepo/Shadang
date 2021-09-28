@@ -7,7 +7,6 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import moment from "moment";
 import { UploadHandler } from "../../common/UploadHandler";
 import {
   NotificationStatus,
@@ -43,6 +42,7 @@ const ExhibitionDetails = () => {
     let formattedImages = urlList.map((item) => ({
       url: item,
       likesCount: 0,
+      likedBy: [],
       active: true,
     }));
     updateFields({ images: formattedImages });
