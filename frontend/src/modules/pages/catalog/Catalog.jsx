@@ -109,6 +109,7 @@ const Catalog = () => {
                     variant="outlined"
                     color="primary"
                     className={classes.exhibitionStatusChip}
+                    size={isMobile ? "small" : "medium"}
                     avatar={
                       <FiberManualRecordIcon
                         color="primary"
@@ -122,6 +123,7 @@ const Catalog = () => {
                     variant="outlined"
                     color="primary"
                     className={classes.exhibitionStatusChip}
+                    size={isMobile ? "small" : "medium"}
                     avatar={
                       <FiberManualRecordOutlinedIcon
                         color="primary"
