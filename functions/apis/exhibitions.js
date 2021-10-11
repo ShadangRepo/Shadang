@@ -110,4 +110,25 @@ router.get("/items", async (req, res) => {
     }
 });
 
+router.put("/like-item", async (req, res) => {
+    try {
+        let user = req.decodedUser;
+        let body = req.body;
+        if (!body.itemId) {
+            res.send({ success: false, message: "itemId is required" });
+        } else {
+            let payload = {}
+            if (body.liked) {
+                payload.likedBy = firebase.firestore.FieldValue.arrayUnion(user.id)
+            } else {
+                payload.likedBy = firebase.firestore.FieldValue.arrayRemove(user.id)
+            }
+            const likeResponse = await dbHandler.update(TableName.exhibitionFiles, body.itemId, payload);
+            res.send(likeResponse);
+        }
+    } catch (error) {
+        res.send({ success: false, message: `${error}` })
+    }
+});
+
 module.exports = router;

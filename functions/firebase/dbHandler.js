@@ -111,10 +111,23 @@ const conditionBassedReadAll = (tableName, lhs, condition, rhs, lhs2, condition2
     })
 }
 
+const update = async (tableName, id, payload) => {
+    return new Promise(async (resolve) => {
+        try {
+            const query = db.collection(tableName).doc(id);
+            await query.update(payload);
+            resolve({ success: true, data: { id } })
+        } catch (err) {
+            resolve({ success: false, message: `${err}` })
+        }
+    })
+}
+
 module.exports = {
     create,
     conditionBassedReadOne,
     batchCreate,
     conditionBassedReadAll,
-    readDocBasedOnId
+    readDocBasedOnId,
+    update
 }
