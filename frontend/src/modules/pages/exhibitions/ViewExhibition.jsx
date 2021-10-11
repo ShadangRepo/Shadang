@@ -12,7 +12,7 @@ import HomeIcon from "@material-ui/icons/Home";
 const ViewExhibition = () => {
   const { exhibitionId = "0" } = useParams();
   const classes = useExhibitionStyles();
-  const { isMobile, queueNotification } = useContext(AppContext);
+  const { queueNotification, user } = useContext(AppContext);
   const history = useHistory();
   const [exhibitionItems, setExhibitionItems] = useState([]);
 
@@ -23,7 +23,15 @@ const ViewExhibition = () => {
       });
       const response = query.response;
       if (response.success) {
-        setExhibitionItems(response.data);
+        let formattedResponse = response.data.map((item) => ({
+          ...item,
+          likesCount: item.likedBy ? item.likedBy.length : 0,
+          liked:
+            item.likedBy && item.likedBy.length > 0
+              ? item.likedBy.includes(user.id)
+              : false,
+        }));
+        setExhibitionItems(formattedResponse);
       } else {
         queueNotification({
           status: NotificationStatus.Error,
@@ -55,20 +63,24 @@ const ViewExhibition = () => {
     }
   };
 
-  const handleLikeClick = (id) => {
+  const handleLikeClick = (id, liked) => {
     let files = exhibitionItems.map((item) =>
       item.id === id
         ? {
             ...item,
-            liked: !item.liked,
+            liked,
             likesCount:
-              !item.liked === true
+              liked === true
                 ? parseInt(item.likesCount) + 1
                 : parseInt(item.likesCount) - 1,
           }
         : item
     );
     setExhibitionItems(files);
+    proxyClient.put(`/exhibitions/like-item`, {
+      liked,
+      itemId: id,
+    });
   };
 
   return (
@@ -95,7 +107,7 @@ const ViewExhibition = () => {
                   color="primary"
                   icon={item.liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                   classes={{ colorPrimary: classes.exhibitionChipPrimary }}
-                  onClick={() => handleLikeClick(item.id)}
+                  onClick={() => handleLikeClick(item.id, !item.liked)}
                 />
                 <Chip
                   label="Home"

@@ -41,7 +41,6 @@ const ExhibitionDetails = () => {
   const onUploadComplete = (urlList) => {
     let formattedImages = urlList.map((item) => ({
       url: item,
-      likesCount: 0,
       likedBy: [],
       active: true,
     }));
