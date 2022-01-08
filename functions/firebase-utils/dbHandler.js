@@ -1,21 +1,18 @@
 const { DocumentNotExistMessage } = require("../utils/constants");
 const firebase = require("./firebaseConfig");
-const { getFirestore, collection, getDocs, where, query, doc, getDoc } = require('firebase/firestore');
+const { getFirestore, collection, getDocs, where, query, doc, getDoc,addDoc,Timestamp } = require('firebase/firestore');
 const db = getFirestore(firebase);
 
 const create = (tableName, data) => {
-    return new Promise((resolve) => {
-        const collection = collection(db, tableName);
-        collection.add({ ...data, createdAt: firebase.firestore.Timestamp.fromDate(new Date()) }).then(docRef => {
-            docRef.get().then((querySnapshot) => {
-                resolve({ success: true, data: { id: docRef.id, ...querySnapshot.data() } })
-            }).catch(error => {
-                resolve({ success: false, message: `${error}` })
-            })
-
-        }).catch(err => {
-            resolve({ success: false, message: `${err}` })
-        });
+    return new Promise(async (resolve) => {
+        const tableRef = collection(db, tableName);
+        const docRef = await addDoc(tableRef, { ...data, createdAt: Timestamp.fromDate(new Date()) });
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            resolve({ success: true, data: { id: docSnap.id, ...docSnap.data() } });
+        } else {
+            resolve({ success: false, message: DocumentNotExistMessage });
+        }
     })
 }
 
@@ -76,39 +73,17 @@ const batchCreate = (tableName, data) => {
     })
 }
 
-const conditionBassedReadAll = (tableName, lhs, condition, rhs, lhs2, condition2, rhs2) => {
-    // lhs and rhs are left hand side and right hand side of condition
-    // lhs2, condition2, rhs2 are optional parameters
-    // condition is string that can be any of <,>,<=,>=,==,!=,in, not-in,array-contains-any,array-contains. 
-    // Reference https://firebase.google.com/docs/firestore/query-data/queries
+const conditionBasedReadAll = (tableName, lhs, condition, rhs) => {
+    return new Promise(async (resolve) => {
+        const tableRef = collection(db,tableName);
+        const q = query(tableRef, where(lhs, condition, rhs));
 
-    return new Promise((resolve) => {
-        const collection = db.collection(tableName);
-        let query = collection;
-
-        // append optional condition if exist. this will make logical AND operation
-        if (lhs && condition && rhs) {
-            query = query.where(lhs, condition, rhs)
-        }
-        if (lhs2 && condition2 && rhs2) {
-            query = query.where(lhs2, condition2, rhs2)
-        }
-
-
-        query.get()
-            .then((querySnapshot) => {
-                if (querySnapshot.empty) {
-                    resolve({ success: true, data: [] })
-                } else {
-                    let data = [];
-                    querySnapshot.forEach(doc => {
-                        data.push({ id: doc.id, ...doc.data() })
-                    });
-                    resolve({ success: true, data: data })
-                }
-            }).catch(err => {
-                resolve({ success: false, message: `${err}` })
-            });
+        const querySnapshot = await getDocs(q);
+        let data = [];
+        querySnapshot.forEach(doc => {
+            data.push({ id: doc.id, ...doc.data() })
+        });
+        resolve({ success: true, data: data });
     })
 }
 
@@ -128,7 +103,7 @@ module.exports = {
     create,
     conditionBasedReadOne,
     batchCreate,
-    conditionBassedReadAll,
+    conditionBasedReadAll,
     readDocBasedOnId,
     update
 }

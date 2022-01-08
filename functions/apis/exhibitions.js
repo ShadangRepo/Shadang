@@ -1,10 +1,11 @@
 const express = require('express');
-const dbHandler = require('../firebase/dbHandler');
+const dbHandler = require('../firebase-utils/dbHandler');
 const constants = require('../utils/constants');
 const TableName = constants.TableName;
 const router = express.Router();
-const firebase = require("../firebase/firebaseConfig");
+const firebase = require("../firebase-utils/firebaseConfig");
 const moment = require("moment");
+const {Timestamp} = require('firebase/firestore');
 
 //exhibitions
 router.post("/create", async (req, res) => {
@@ -19,8 +20,8 @@ router.post("/create", async (req, res) => {
             res.send({ success: false, message: "End date is required" })
         } else {
             let exhibitionDetails = { ...body, createdBy: user.id };
-            exhibitionDetails.startDate = firebase.firestore.Timestamp.fromDate(new Date(exhibitionDetails.startDate))
-            exhibitionDetails.endDate = firebase.firestore.Timestamp.fromDate(new Date(exhibitionDetails.endDate))
+            exhibitionDetails.startDate = Timestamp.fromDate(new Date(exhibitionDetails.startDate))
+            exhibitionDetails.endDate = Timestamp.fromDate(new Date(exhibitionDetails.endDate))
             delete exhibitionDetails.images
             const response = await dbHandler.create(TableName.exhibitions, exhibitionDetails)
             if (response.success) {
@@ -45,7 +46,7 @@ router.post("/create", async (req, res) => {
 router.get("/myExhibitions", async (req, res) => {
     let user = req.decodedUser;
     try {
-        const response = await dbHandler.conditionBassedReadAll(TableName.exhibitions, "createdBy", "==", user.id);
+        const response = await dbHandler.conditionBasedReadAll(TableName.exhibitions, "createdBy", "==", user.id);
         if (response.success && response.data) {
             response.data = response.data.map(item => ({
                 ...item,
@@ -65,8 +66,8 @@ router.get("/myExhibitions", async (req, res) => {
 
 router.get("/list", async (req, res) => {
     try {
-        let currentDate = firebase.firestore.Timestamp.fromDate(new Date());
-        const exhibitionResponse = await dbHandler.conditionBassedReadAll(TableName.exhibitions, "endDate", ">=", currentDate);
+        let currentDate = Timestamp.fromDate(new Date());
+        const exhibitionResponse = await dbHandler.conditionBasedReadAll(TableName.exhibitions, "endDate", ">=", currentDate);
         if (exhibitionResponse.success) {
             let formattedExhibitions = exhibitionResponse.data.map(item => ({
                 ...item,
@@ -94,7 +95,7 @@ router.get("/items", async (req, res) => {
                 let exhibitionData = { ...exhibitionResponse.data };
                 //check if exhibition is live
                 if (moment(exhibitionData.startDate.toDate()).isSameOrBefore(moment()) && moment(exhibitionData.endDate.toDate()).isSameOrAfter(moment())) {
-                    const exhibitionItemsResponse = await dbHandler.conditionBassedReadAll(TableName.exhibitionFiles, "exhibitionId", "==", req.query.exhibitionId);
+                    const exhibitionItemsResponse = await dbHandler.conditionBasedReadAll(TableName.exhibitionFiles, "exhibitionId", "==", req.query.exhibitionId);
                     res.send(exhibitionItemsResponse)
                 } else {
                     res.send({ success: false, message: `This exhibition is not runing now` })
