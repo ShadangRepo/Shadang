@@ -12,13 +12,13 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import { useAuthenticationStyles } from "./authenticationStyles";
 import { useGlobalStyles } from "../../shared/globalStyles";
 import { useHistory } from "react-router-dom";
-import { PhoneField } from "../../common/MaskedInputs";
 import { proxyClient } from "../../shared/proxy-client";
 import {
   setTokenToLocalStorage,
   setRefreshTokenToLocalStorage,
 } from "../../preferences/userPreferences";
 var specialCharacterRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+var phoneNumberRegex = /^[7-9][0-9]*$/;
 
 const Signup = () => {
   const classes = useAuthenticationStyles();
@@ -52,6 +52,8 @@ const Signup = () => {
     if (!newData.lastName) newErrors.lastName = "Last Name is required";
     if (!newData.contact) newErrors.contact = "Contact number is required";
     if (newData.contact && newData.contact.length !== 10)
+      newErrors.contact = "Please enter valid contact";
+    if (newData.contact && !phoneNumberRegex.test(newData.contact))
       newErrors.contact = "Please enter valid contact";
     if (!newData.email) newErrors.email = "Email is required";
     if (!newData.password) newErrors.password = "Password is required";
@@ -234,7 +236,7 @@ const Signup = () => {
                     }
                     error={!!errors.contact}
                     helperText={errors.contact}
-                    InputProps={{ inputComponent: PhoneField }}
+                    inputProps={{ maxLength: 10 }}
                   />
                 </Grid>
                 <Grid item xs={12}>
