@@ -23,6 +23,7 @@ const ViewExhibition = () => {
       });
       const response = query.response;
       if (response.success) {
+        if(response.data && response.data.length>0){
         let formattedResponse = response.data.map((item) => ({
           ...item,
           likesCount: item.likedBy ? item.likedBy.length : 0,
@@ -32,6 +33,13 @@ const ViewExhibition = () => {
               : false,
         }));
         setExhibitionItems(formattedResponse);
+      }else{
+        queueNotification({
+          status: NotificationStatus.Error,
+          message: "No images in this exhibition",
+        });
+        history.push("/");
+      }
       } else {
         queueNotification({
           status: NotificationStatus.Error,

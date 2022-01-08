@@ -5,7 +5,7 @@ const TableName = constants.TableName;
 const router = express.Router();
 const firebase = require("../firebase-utils/firebaseConfig");
 const moment = require("moment");
-const {Timestamp} = require('firebase/firestore');
+const { Timestamp, arrayUnion, arrayRemove } = require('firebase/firestore');
 
 //exhibitions
 router.post("/create", async (req, res) => {
@@ -120,9 +120,9 @@ router.put("/like-item", async (req, res) => {
         } else {
             let payload = {}
             if (body.liked) {
-                payload.likedBy = firebase.firestore.FieldValue.arrayUnion(user.id)
+                payload.likedBy = arrayUnion(user.id)
             } else {
-                payload.likedBy = firebase.firestore.FieldValue.arrayRemove(user.id)
+                payload.likedBy = arrayRemove(user.id)
             }
             const likeResponse = await dbHandler.update(TableName.exhibitionFiles, body.itemId, payload);
             res.send(likeResponse);

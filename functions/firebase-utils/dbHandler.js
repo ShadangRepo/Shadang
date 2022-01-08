@@ -1,6 +1,18 @@
 const { DocumentNotExistMessage, BatchOperationSuccessMessage } = require("../utils/constants");
 const firebase = require("./firebaseConfig");
-const { getFirestore, collection, getDocs, where, query, doc, getDoc, addDoc, writeBatch, Timestamp } = require('firebase/firestore');
+const {
+    getFirestore,
+    collection,
+    getDocs,
+    where,
+    query,
+    doc,
+    getDoc,
+    addDoc,
+    writeBatch,
+    updateDoc,
+    Timestamp
+} = require('firebase/firestore');
 const db = getFirestore(firebase);
 
 const create = (tableName, data) => {
@@ -86,8 +98,8 @@ const conditionBasedReadAll = (tableName, lhs, condition, rhs) => {
 const update = async (tableName, id, payload) => {
     return new Promise(async (resolve) => {
         try {
-            const query = db.collection(tableName).doc(id);
-            await query.update(payload);
+            const docRef = doc(db, tableName, id);
+            await updateDoc(docRef, payload);
             resolve({ success: true, data: { id } })
         } catch (err) {
             resolve({ success: false, message: `${err}` })
