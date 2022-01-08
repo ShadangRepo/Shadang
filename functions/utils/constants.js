@@ -10,6 +10,7 @@ const TokenExpiredMessage = "Token expired";
 const RefreshTokenExpiredMessage = "Refresh token expired";
 const DocumentNotExistMessage = "Document Not Exist";
 const NoTokenPresent = "A token is required for authentication";
+const BatchOperationSuccessMessage = "Batch operation completed successfully";
 
 module.exports = {
     TableName,
@@ -18,5 +19,6 @@ module.exports = {
     TokenExpiredMessage,
     RefreshTokenExpiredMessage,
     DocumentNotExistMessage,
-    NoTokenPresent
+    NoTokenPresent,
+    BatchOperationSuccessMessage
 }

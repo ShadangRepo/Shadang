@@ -39,7 +39,7 @@ router.post("/create", async (req, res) => {
             }
         }
     } catch (error) {
-        res.send({ success: false, message: error })
+        res.send({ success: false, message: `${error}` })
     }
 });
 

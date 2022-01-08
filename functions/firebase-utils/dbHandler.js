@@ -1,6 +1,6 @@
-const { DocumentNotExistMessage } = require("../utils/constants");
+const { DocumentNotExistMessage, BatchOperationSuccessMessage } = require("../utils/constants");
 const firebase = require("./firebaseConfig");
-const { getFirestore, collection, getDocs, where, query, doc, getDoc,addDoc,Timestamp } = require('firebase/firestore');
+const { getFirestore, collection, getDocs, where, query, doc, getDoc, addDoc, writeBatch, Timestamp } = require('firebase/firestore');
 const db = getFirestore(firebase);
 
 const create = (tableName, data) => {
@@ -45,7 +45,6 @@ const conditionBasedReadOne = (tableName, lhs, condition, rhs) => {
         let response = [];
         let querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            console.log("doc", doc)
             // doc.data() is never undefined for query doc snapshots
             response.push({ id: doc.id, ...doc.data() })
         });
@@ -60,22 +59,19 @@ const conditionBasedReadOne = (tableName, lhs, condition, rhs) => {
 const batchCreate = (tableName, data) => {
     //data is expected to be array of objects
     return new Promise((resolve) => {
-        var batch = db.batch()
-        data.forEach((doc) => {
-            var docRef = db.collection(tableName).doc(); //automatically generate unique id
-            batch.set(docRef, doc);
+        var batch = writeBatch(db);
+        const tableRef = collection(db, tableName);
+        data.forEach(async (element) => {
+            //this code needs to optimize. this is not batch operation. Firebase provides batch writes, but not batch create.need to check documentation.
+            await addDoc(tableRef, element);
         });
-        batch.commit().then(() => {
-            resolve({ success: true, data: {}, message: "Records created successfully" })
-        }).catch(err => {
-            resolve({ success: false, message: `${err}` })
-        });
+        resolve({ success: true, data: {}, message: BatchOperationSuccessMessage })
     })
 }
 
 const conditionBasedReadAll = (tableName, lhs, condition, rhs) => {
     return new Promise(async (resolve) => {
-        const tableRef = collection(db,tableName);
+        const tableRef = collection(db, tableName);
         const q = query(tableRef, where(lhs, condition, rhs));
 
         const querySnapshot = await getDocs(q);
