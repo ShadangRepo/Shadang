@@ -1,10 +1,11 @@
 const { DocumentNotExistMessage } = require("../utils/constants");
 const firebase = require("./firebaseConfig");
-const db = firebase.firestore();
+const { getFirestore, collection, getDocs, where, query, doc, getDoc } = require('firebase/firestore');
+const db = getFirestore(firebase);
 
 const create = (tableName, data) => {
     return new Promise((resolve) => {
-        const collection = db.collection(tableName);
+        const collection = collection(db, tableName);
         collection.add({ ...data, createdAt: firebase.firestore.Timestamp.fromDate(new Date()) }).then(docRef => {
             docRef.get().then((querySnapshot) => {
                 resolve({ success: true, data: { id: docRef.id, ...querySnapshot.data() } })
@@ -21,12 +22,12 @@ const create = (tableName, data) => {
 const readDocBasedOnId = async (tableName, id) => {
     return new Promise(async (resolve) => {
         try {
-            const query = db.collection(tableName).doc(id);
-            const doc = await query.get();
-            if (!doc.exists) {
-                resolve({ success: false, message: DocumentNotExistMessage })
+            const docRef = doc(db, tableName, id);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                resolve({ success: true, data: { id: docSnap.id, ...docSnap.data() } });
             } else {
-                resolve({ success: true, data: { id: doc.id, ...doc.data() } })
+                resolve({ success: false, message: DocumentNotExistMessage });
             }
         } catch (err) {
             resolve({ success: false, message: `${err}` })
@@ -34,28 +35,28 @@ const readDocBasedOnId = async (tableName, id) => {
     })
 }
 
-const conditionBassedReadOne = (tableName, lhs, condition, rhs, lhs2, condition2, rhs2) => {
+const conditionBasedReadOne = (tableName, lhs, condition, rhs) => {
     // lhs and rhs are left hand side and right hand side of condition
     // lhs2, condition2, rhs2 are optional parameters
     // condition is string that can be any of <,>,<=,>=,==,!=,in, not-in,array-contains-any,array-contains. 
     // Reference https://firebase.google.com/docs/firestore/query-data/queries
 
-    return new Promise((resolve) => {
-        const collection = db.collection(tableName);
-        let query = collection.where(lhs, condition, rhs)
+    return new Promise(async (resolve) => {
+        const tableRef = collection(db, tableName);
+        let q = query(tableRef, where(lhs, condition, rhs))
 
-        // append optional condition if exist. this will make logical AND operation
-        if (lhs2 && condition2 && rhs2) {
-            query = query.where(lhs2, condition2, rhs2)
+        let response = [];
+        let querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            console.log("doc", doc)
+            // doc.data() is never undefined for query doc snapshots
+            response.push({ id: doc.id, ...doc.data() })
+        });
+        if (response.length > 0) {
+            resolve({ success: true, data: response[0] })
+        } else {
+            resolve({ success: false, message: DocumentNotExistMessage })
         }
-
-        query.get()
-            .then((querySnapshot) => {
-                const firstRecord = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() }
-                resolve({ success: true, data: firstRecord })
-            }).catch(err => {
-                resolve({ success: false, message: `${err}` })
-            });
     })
 }
 
@@ -125,7 +126,7 @@ const update = async (tableName, id, payload) => {
 
 module.exports = {
     create,
-    conditionBassedReadOne,
+    conditionBasedReadOne,
     batchCreate,
     conditionBassedReadAll,
     readDocBasedOnId,

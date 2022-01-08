@@ -1,5 +1,5 @@
 const express = require('express');
-const dbHandler = require('../firebase/dbHandler');
+const dbHandler = require('../firebase-utils/dbHandler');
 const constants = require('../utils/constants');
 const { encryptPassword, checkPassword } = require('../utils/encryption');
 const TableName = constants.TableName;
@@ -15,7 +15,7 @@ router.post("/login", async (req, res) => {
         } else if (!body.password) {
             res.send({ success: false, message: "Password is required" })
         } else {
-            const response = await dbHandler.conditionBassedReadOne(TableName.users, "email", "==", body.email)
+            const response = await dbHandler.conditionBasedReadOne(TableName.users, "email", "==", body.email)
             if (response.success && response.data) {
                 let passwordMatched = await checkPassword(body.password, response.data.password)
                 if (passwordMatched) {
@@ -62,7 +62,7 @@ router.post("/signup", async (req, res) => {
         } else if (!body.password) {
             res.send({ success: false, message: "Password is required" })
         } else {
-            const existingUser = await dbHandler.conditionBassedReadOne(TableName.users, "email", "==", body.email)
+            const existingUser = await dbHandler.conditionBasedReadOne(TableName.users, "email", "==", body.email)
             if (existingUser.success) {
                 res.send({ success: false, message: "This Email is already taken" });
             } else {
