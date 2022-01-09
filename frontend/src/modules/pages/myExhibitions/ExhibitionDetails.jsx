@@ -1,5 +1,5 @@
 import { FormControlLabel, Grid, MenuItem, Switch, TextField, Typography } from "@material-ui/core";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router";
 import { FormPage } from "../../common/FormPage";
 import {
@@ -30,6 +30,7 @@ const ExhibitionDetails = () => {
   const [errors, setErrors] = useState({});
   const [exhibitionDetails, setExhibitionDetails] = useState({});
   const globalClasses = useGlobalStyles();
+  const [loading, setLoading] = useState(false);
 
   ["title", "description", "category"].forEach(
     (key) => (exhibitionDetails[key] = exhibitionDetails[key] || "")
@@ -38,6 +39,31 @@ const ExhibitionDetails = () => {
   ["isGroupExhibition"].forEach(
     (key) => (exhibitionDetails[key] = exhibitionDetails[key] || false)
   );
+
+  const fetchDetails = async () => {
+    if (`${exhibitionId}` !== "0") {
+      try {
+        setLoading(true);
+        let query = await proxyClient.get("/exhibitions/details", { exhibitionId });
+        const response = query.response;
+        if (response.success) {
+          response.data && setExhibitionDetails(response.data);
+        } else {
+          queueNotification({
+            status: NotificationStatus.Error,
+            message: response.message,
+          });
+        }
+        setLoading(false);
+      } catch (err) {
+        queueNotification(err);
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchDetails();
+  }, [exhibitionId]);
 
   const updateFields = (newValues) => {
     const newFormData = { ...exhibitionDetails, ...newValues };
@@ -110,7 +136,7 @@ const ExhibitionDetails = () => {
         <FormPage
           onSave={handleSaveExhibition}
           onCancel={() => history.push(`${path.split("/").slice(0, -1).join("/")}`)}
-          blocked={saveStatus.isSaving}
+          blocked={saveStatus.isSaving || loading}
         >
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -211,13 +237,14 @@ const ExhibitionDetails = () => {
                 }
               />
             </Grid>
-            <Grid item xs={12}>
+            {!loading && <Grid item xs={12}>
               <UploadHandler
                 multiple={true}
                 accept="image/*"
+                defaultValue={exhibitionDetails.images}
                 onChange={(urlList) => onImagesChange(urlList)}
               />
-            </Grid>
+            </Grid>}
           </Grid>
         </FormPage>
       </Grid>

@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import AddIcon from "@material-ui/icons/Add";
+import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles({
   root: {
@@ -59,7 +60,7 @@ const CustomDataTable = (props) => {
           {label}
         </Typography>
 
-        {actions.onAdd && (
+        {actions && actions.onAdd && (
           <Tooltip title={addLabel || "Add"}>
             <IconButton onClick={() => actions.onAdd()}>
               <AddIcon />
@@ -86,6 +87,7 @@ const CustomDataTable = (props) => {
                   {column.label}
                 </TableCell>
               ))}
+              {actions && actions.onEdit && <TableCell>Actions</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -109,6 +111,15 @@ const CustomDataTable = (props) => {
                         </TableCell>
                       );
                     })}
+                    {actions && actions.onEdit &&
+                      <TableCell key="actions">
+                        <Tooltip title={"Edit"}>
+                          <IconButton onClick={() => actions.onEdit(row[keyField])} size="small">
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    }
                   </TableRow>
                 );
               })}

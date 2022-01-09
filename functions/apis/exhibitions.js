@@ -28,7 +28,7 @@ router.post("/create", async (req, res) => {
             const response = await dbHandler.create(TableName.exhibitions, exhibitionDetails)
             if (response.success) {
                 var formattedImages = body.images ? body.images.map(item => ({
-                    ...item, 
+                    ...item,
                     exhibitionId: response.data.id,
                     likedBy: []
                 })) : [];
@@ -130,6 +130,33 @@ router.put("/like-item", async (req, res) => {
             }
             const likeResponse = await dbHandler.update(TableName.exhibitionFiles, body.itemId, payload);
             res.send(likeResponse);
+        }
+    } catch (error) {
+        res.send({ success: false, message: `${error}` })
+    }
+});
+
+router.get("/details", async (req, res) => {
+    try {
+        if (req.query.exhibitionId) {
+            const exhibitionResponse = await dbHandler.readDocBasedOnId(TableName.exhibitions, req.query.exhibitionId);
+            if (!exhibitionResponse.success && exhibitionResponse.message === constants.DocumentNotExistMessage) {
+                res.send({ success: false, message: "Invalid exhibition id" });
+            } else if (exhibitionResponse.success && exhibitionResponse.data) {
+                let exhibitionData = {
+                    ...exhibitionResponse.data,
+                    startDate: exhibitionResponse.data.startDate.toDate(),
+                    endDate: exhibitionResponse.data.endDate.toDate(),
+                    createdAt: exhibitionResponse.data.createdAt.toDate()
+                };
+                const exhibitionItemsResponse = await dbHandler.conditionBasedReadAll(TableName.exhibitionFiles, "exhibitionId", "==", req.query.exhibitionId);
+                exhibitionData.images = exhibitionItemsResponse.data;
+                res.send({ success: true, data: exhibitionData });
+            } else {
+                res.send(exhibitionResponse);
+            }
+        } else {
+            res.send({ success: false, message: `Exhibition id is required` })
         }
     } catch (error) {
         res.send({ success: false, message: `${error}` })

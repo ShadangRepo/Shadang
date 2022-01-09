@@ -57,7 +57,8 @@ const UploadHandler = (props) => {
     chooseLabel,
     multiple,
     accept,
-    onChange //onChange function is triggered on upload complete and change of active status of image
+    onChange, //onChange function is triggered on upload complete and change of active status of image
+    defaultValue //if we want to show some already uploaded images then assign it to default value. it should be array of objects of format {id:"",url:"",active:""}
   } = props;
   const classes = useStyles();
   const globalClasses = useGlobalStyles();
@@ -122,6 +123,7 @@ const UploadHandler = (props) => {
           }
         );
       } else {
+        setProgress(100);
         let progressData = [...uploadedFiles];
         if (filesToUpload[progressData.length]) {
           //push next object to upload
@@ -138,7 +140,6 @@ const UploadHandler = (props) => {
 
   useEffect(() => {
     if (uploadedFiles.length > 0 && uploadedFiles[uploadedFiles.length - 1]) {
-      setProgress(0);
       uploadFiles(uploadedFiles[uploadedFiles.length - 1]); //send last object in uploadedFiles array for upload
     }
   }, [uploadedFiles.length]);
@@ -148,6 +149,12 @@ const UploadHandler = (props) => {
       setUploadedFiles([...uploadedFiles, filesToUpload[uploadedFiles.length]]);
     }
   }, [filesToUpload]);
+
+  useEffect(() => {
+    if (defaultValue && defaultValue.length > 0) {
+      setFilesToUpload([...defaultValue]);
+    }
+  }, []);
 
   const handleFilesChange = (event) => {
     let files = event.target.files;
