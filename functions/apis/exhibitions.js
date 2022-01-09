@@ -14,10 +14,12 @@ router.post("/create", async (req, res) => {
     try {
         if (!body.title) {
             res.send({ success: false, message: "Title is required" });
+        } else if (!body.category) {
+            res.send({ success: false, message: "Category is required" });
         } else if (!body.startDate) {
-            res.send({ success: false, message: "Start date is required" })
+            res.send({ success: false, message: "Start date is required" });
         } else if (!body.endDate) {
-            res.send({ success: false, message: "End date is required" })
+            res.send({ success: false, message: "End date is required" });
         } else {
             let exhibitionDetails = { ...body, createdBy: user.id };
             exhibitionDetails.startDate = Timestamp.fromDate(new Date(exhibitionDetails.startDate))
@@ -26,7 +28,9 @@ router.post("/create", async (req, res) => {
             const response = await dbHandler.create(TableName.exhibitions, exhibitionDetails)
             if (response.success) {
                 var formattedImages = body.images ? body.images.map(item => ({
-                    ...item, exhibitionId: response.data.id
+                    ...item, 
+                    exhibitionId: response.data.id,
+                    likedBy: []
                 })) : [];
                 const createExhibitionImagesResponse = await dbHandler.batchCreate(TableName.exhibitionFiles, formattedImages)
                 if (createExhibitionImagesResponse.success) {

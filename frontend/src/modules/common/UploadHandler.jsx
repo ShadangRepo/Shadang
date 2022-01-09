@@ -1,9 +1,10 @@
-import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Button, FormControlLabel, Grid, makeStyles, Switch, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { storage } from "../firebase";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import { AppContext } from "./AppContext";
+import { useGlobalStyles } from "../shared/globalStyles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,11 +47,20 @@ const useStyles = makeStyles((theme) => ({
     color: "#525252",
     marginRight: 20,
   },
+  checkLabel: {
+    fontSize: 12
+  }
 }));
 
 const UploadHandler = (props) => {
-  const { chooseLabel, multiple, accept, onComplete } = props;
+  const {
+    chooseLabel,
+    multiple,
+    accept,
+    onChange //onChange function is triggered on upload complete and change of active status of image
+  } = props;
   const classes = useStyles();
+  const globalClasses = useGlobalStyles();
   const [uploadedFiles, setUploadedFiles] = useState([]); //last object in this array is considered for uploading
   const [filesToUpload, setFilesToUpload] = useState([]);
   const fileRef = useRef();
@@ -105,8 +115,8 @@ const UploadHandler = (props) => {
                   setUploadedFiles(progressData);
                 } else {
                   setUploadedFiles(progressData);
-                  let urlList = progressData.map(({ url }) => url);
-                  onComplete(urlList);
+                  let urlList = progressData.map(({ url, active }) => ({ url, active }));
+                  onChange(urlList);
                 }
               });
           }
@@ -119,22 +129,22 @@ const UploadHandler = (props) => {
           setUploadedFiles(progressData);
         } else {
           setUploadedFiles(progressData);
-          let urlList = progressData.map(({ url }) => url);
-          onComplete(urlList);
+          let urlList = progressData.map(({ url, active }) => ({ url, active }));
+          onChange(urlList);
         }
       }
     }
   };
 
   useEffect(() => {
-    if (uploadedFiles.length > 0) {
+    if (uploadedFiles.length > 0 && uploadedFiles[uploadedFiles.length - 1]) {
       setProgress(0);
       uploadFiles(uploadedFiles[uploadedFiles.length - 1]); //send last object in uploadedFiles array for upload
     }
   }, [uploadedFiles.length]);
 
   useEffect(() => {
-    if (filesToUpload.length > 0) {
+    if (filesToUpload.length > 0 && filesToUpload[uploadedFiles.length]) {
       setUploadedFiles([...uploadedFiles, filesToUpload[uploadedFiles.length]]);
     }
   }, [filesToUpload]);
@@ -146,6 +156,7 @@ const UploadHandler = (props) => {
         const newFileData = {
           file: files[i],
           url: null,
+          active: true
         };
         newFileData["id"] = Math.floor(Math.random() * 10000000000000);
         setFilesToUpload((prevState) => [...prevState, newFileData]);
@@ -153,18 +164,44 @@ const UploadHandler = (props) => {
     }
   };
 
+  const changeActiveStatus = (checked, url) => {
+    let newImages = [...uploadedFiles]; // If you are changing status means uploaded files and files to upload are same
+    newImages = newImages.map(item => item.url === url ? { ...item, active: checked } : item);
+    setFilesToUpload([...newImages]);
+    setUploadedFiles([...newImages]);
+    let urlList = newImages.map(({ url, active }) => ({ url, active }));
+    onChange(urlList);
+  }
+
+  let uploadInProgress = filesToUpload.length > 0 && (filesToUpload.length !== uploadedFiles.length || (filesToUpload.length === uploadedFiles.length && progress !== 100));
+
   return (
     <Grid container spacing={2} className={classes.root}>
-      <Grid item xs={12} className={classes.uploadContainer}>
+      <Grid item container xs={12} className={classes.uploadContainer}>
         {uploadedFiles.length > 0 ? (
           uploadedFiles.map((item, i) => (
-            <div key={`${i}`}>
+            <Grid item xs={6} md={3} key={`${i}`} className={`${globalClasses.justifyContentCenter}`}>
               {item && item.url ? (
-                <img
-                  src={item.url}
-                  alt="file"
-                  className={classes.filePreview}
-                />
+                <div className={globalClasses.flexColumn}>
+                  <img
+                    src={item.url}
+                    alt="file"
+                    className={classes.filePreview}
+                  />
+                  {!uploadInProgress && <div className={globalClasses.justifyContentCenter}>
+                    <FormControlLabel
+                      classes={{ label: classes.checkLabel }}
+                      control={
+                        <Switch
+                          id="active"
+                          color="primary"
+                          size="small"
+                          checked={item.active}
+                          onChange={event => changeActiveStatus(event.target.checked, item.url)}
+                        />}
+                      label="Active" />
+                  </div>}
+                </div>
               ) : (
                 <Box
                   position="relative"
@@ -190,7 +227,7 @@ const UploadHandler = (props) => {
                   </Box>
                 </Box>
               )}
-            </div>
+            </Grid>
           ))
         ) : (
           <Typography className={classes.noFilesText}>
@@ -209,19 +246,17 @@ const UploadHandler = (props) => {
           onChange={handleFilesChange}
           accept={accept}
         />
-        {filesToUpload.length > 0 &&
-          (filesToUpload.length !== uploadedFiles.length ||
-            (filesToUpload.length === uploadedFiles.length &&
-              progress !== 100)) && (
-            <Typography className={classes.uploadingLabel}>
-              {`Uploading ${uploadedFiles.length}/${filesToUpload.length}`}
-            </Typography>
-          )}
+        {uploadInProgress && (
+          <Typography className={classes.uploadingLabel}>
+            {`Uploading ${uploadedFiles.length}/${filesToUpload.length}`}
+          </Typography>
+        )}
         <Button
           variant="outlined"
           color="primary"
           className={classes.actionButton}
           onClick={chooseImages}
+          disabled={uploadInProgress}
         >
           {chooseLabel || "Choose"}
         </Button>

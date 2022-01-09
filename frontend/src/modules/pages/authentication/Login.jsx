@@ -18,6 +18,7 @@ import {
   setRefreshTokenToLocalStorage,
 } from "../../preferences/userPreferences";
 import queryString from "query-string";
+import { BrandName } from "../../shared/constants";
 
 const Login = () => {
   const classes = useAuthenticationStyles();
@@ -128,7 +129,7 @@ const Login = () => {
                 variant="h1"
                 style={{ fontWeight: "bold", color: "white" }}
               >
-                Shadang
+                {BrandName}
               </Typography>
               <Typography
                 style={{
@@ -154,7 +155,7 @@ const Login = () => {
                     className={classes.circleIcon}
                   />
                 </Grid>
-                <Grid item xs={12} className={globalClasses.marginTop30}>
+                <Grid item xs={12} className={globalClasses.mt30}>
                   <TextField
                     name="email"
                     label="Email"
@@ -198,7 +199,7 @@ const Login = () => {
                     helperText={errors.password}
                   />
                 </Grid>
-                <Grid item xs={12} className={globalClasses.marginTop30}>
+                <Grid item xs={12} className={globalClasses.mt30}>
                   <LoaderButton
                     loading={saveStatus.isSaving}
                     onClick={handleSubmit}
@@ -210,7 +211,7 @@ const Login = () => {
                 <Grid
                   item
                   xs={12}
-                  className={`${classes.centerAligned} ${globalClasses.marginTop30}`}
+                  className={`${classes.centerAligned} ${globalClasses.mt30}`}
                 >
                   <Typography className={globalClasses.link}>
                     Forgot password?
@@ -219,7 +220,7 @@ const Login = () => {
                 <Grid
                   item
                   xs={12}
-                  className={`${classes.centerAligned} ${globalClasses.marginTop20}`}
+                  className={`${classes.centerAligned} ${globalClasses.mt20}`}
                 >
                   <Typography>New to Shadang?</Typography>
                   <Typography

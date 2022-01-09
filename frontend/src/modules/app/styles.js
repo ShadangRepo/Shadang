@@ -6,6 +6,8 @@ export const useStyles = makeStyles((theme) => ({
     },
     title: {
         flexGrow: 1,
+        display: "flex",
+        alignItems: "center"
     },
     appBody: {
         padding: 20,

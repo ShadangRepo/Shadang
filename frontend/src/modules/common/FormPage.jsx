@@ -323,7 +323,7 @@ const FormPage = forwardRef(
     });
 
     return (
-      <Paper className={classes.paper}>
+      <Paper className={`${classes.paper} ${classes.formContainer}`}>
         <form
           onChange={(evt) => {
             setDirty(true);

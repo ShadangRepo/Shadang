@@ -17,6 +17,7 @@ import {
   setTokenToLocalStorage,
   setRefreshTokenToLocalStorage,
 } from "../../preferences/userPreferences";
+import { BrandName } from "../../shared/constants";
 var specialCharacterRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 var phoneNumberRegex = /^[7-9][0-9]*$/;
 
@@ -152,7 +153,7 @@ const Signup = () => {
                 variant="h1"
                 style={{ fontWeight: "bold", color: "white" }}
               >
-                Shadang
+                {BrandName}
               </Typography>
               <Typography
                 style={{
@@ -178,7 +179,7 @@ const Signup = () => {
                     className={classes.circleIcon}
                   />
                 </Grid>
-                <Grid item xs={12} className={globalClasses.marginTop20}>
+                <Grid item xs={12} className={globalClasses.mt20}>
                   <TextField
                     name="firstName"
                     label="First Name"
@@ -284,7 +285,7 @@ const Signup = () => {
                     helperText={errors.confirmPassword}
                   />
                 </Grid>
-                <Grid item xs={12} className={globalClasses.marginTop30}>
+                <Grid item xs={12} className={globalClasses.mt30}>
                   <LoaderButton
                     loading={saveStatus.isSaving}
                     onClick={handleSubmit}
@@ -296,7 +297,7 @@ const Signup = () => {
                 <Grid
                   item
                   xs={12}
-                  className={`${classes.centerAligned} ${globalClasses.marginTop20}`}
+                  className={`${classes.centerAligned} ${globalClasses.mt20}`}
                 >
                   <Typography>Already have account?</Typography>
                   <Typography

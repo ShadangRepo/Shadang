@@ -17,6 +17,7 @@ import {
   clearRefreshTokenFromLocalStorage,
   clearTokenFromLocalStorage,
 } from "../preferences/userPreferences";
+import { BrandName } from "../shared/constants";
 
 const MenuIndex = {
   Account: 0,
@@ -79,7 +80,7 @@ const AppLayout = ({ children }) => {
             onClick={() => history.push("/")}
             style={{ cursor: "pointer" }}
           >
-            Shadang
+           {BrandName}
           </Typography>
           <div>
             <IconButton onClick={openShoppingCart} color="inherit">
