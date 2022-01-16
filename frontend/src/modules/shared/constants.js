@@ -40,77 +40,82 @@ const ExhibitionCategories = [
     {
         label: "Education",
         Icon: SchoolIcon
-    },{
+    }, {
         label: "Packaging",
         Icon: CardGiftcardIcon
-    },{
+    }, {
         label: "Entertainment",
         Icon: VideocamIcon
-    },{
+    }, {
         label: "Telecommunication",
         Icon: PhoneEnabledIcon
-    },{
+    }, {
         label: "Building",
         Icon: ApartmentIcon
-    },{
+    }, {
         label: "Kids",
         Icon: ChildCareIcon
-    },{
+    }, {
         label: "Food",
         Icon: LocalDiningIcon
-    },{
+    }, {
         label: "Animals",
         Icon: PetsIcon
-    },{
+    }, {
         label: "Agriculture",
         Icon: NatureIcon
-    },{
+    }, {
         label: "Tourism",
         Icon: FlightIcon
-    },{
+    }, {
         label: "Environment",
         Icon: LandscapeIcon
-    },{
+    }, {
         label: "Security",
         Icon: SecurityIcon
-    },{
+    }, {
         label: "Automobile",
         Icon: DirectionsCarIcon
-    },{
+    }, {
         label: "Home",
         Icon: HomeIcon
-    },{
+    }, {
         label: "Office",
         Icon: BusinessIcon
-    },{
+    }, {
         label: "Fassion",
         Icon: ShoppingBasketIcon
-    },{
+    }, {
         label: "Electronics",
         Icon: MemoryIcon
-    },{
+    }, {
         label: "Business",
         Icon: WorkIcon
-    },{
+    }, {
         label: "Art",
         Icon: BrushIcon
-    },{
+    }, {
         label: "Fitness",
         Icon: FitnessCenterIcon
-    },{
+    }, {
         label: "Finance",
         Icon: AttachMoneyIcon
-    },{
+    }, {
         label: "Science",
         Icon: ImportantDevicesIcon
-    },{
+    }, {
         label: "Technology",
         Icon: LaptopIcon
-    },{
+    }, {
         label: "Medical",
         Icon: LocalHospitalIcon
     }
-]
+];
+
+const dateFormat1 = "DD/MM/YYYY";
+const dateFormat2 = "MM/DD/YYYY";
+const dateTimeFormat1 = "DD/MM/YYYY HH:mm:ss";
+const dateTimeFormat2 = "MM/DD/YYYY HH:mm:ss";
 
 export {
     Config,
@@ -120,5 +125,9 @@ export {
     TokenExpiredMessage,
     RefreshTokenExpiredMessage,
     NoTokenPresent,
-    ExhibitionCategories
+    ExhibitionCategories,
+    dateFormat1,
+    dateFormat2,
+    dateTimeFormat1,
+    dateTimeFormat2
 };

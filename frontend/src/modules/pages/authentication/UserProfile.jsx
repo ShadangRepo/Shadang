@@ -5,7 +5,7 @@ import {
   Paper,
   Typography,
 } from "@material-ui/core";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../common/AppContext";
 import { CircleAvatar } from "../../common/CircleAvatar";
 import { useAuthenticationStyles } from "./authenticationStyles";
@@ -16,11 +16,42 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import { useGlobalStyles } from "../../shared/globalStyles";
+import { proxyClient } from "../../shared/proxy-client";
+import { NotificationStatus } from "../../common/Notifications";
+import moment from "moment";
+import { dateFormat1, ExhibitionCategories } from "../../shared/constants";
 
 const UserProfile = () => {
   const classes = useAuthenticationStyles();
   const globalClasses = useGlobalStyles();
-  const { user } = useContext(AppContext);
+  const { user, queueNotification } = useContext(AppContext);
+  const [exhibitions, setExhibitions] = useState([]);
+
+  const getExhibitions = async () => {
+    try {
+      const query = await proxyClient.get("/exhibitions/myExhibitions");
+      const response = query.response;
+      if (response.success) {
+        let formattedResponse = response.data.map((item) => ({
+          ...item,
+          startDate: moment(item.startDate).format(dateFormat1),
+          endDate: moment(item.endDate).format(dateFormat1),
+        }));
+        setExhibitions(formattedResponse);
+      } else {
+        queueNotification({
+          status: NotificationStatus.Error,
+          message: response.message,
+        });
+      }
+    } catch (err) {
+      queueNotification(err);
+    }
+  };
+
+  useEffect(() => {
+    getExhibitions();
+  }, []);
 
   return (
     <Paper className={globalClasses.paper}>
@@ -57,71 +88,49 @@ const UserProfile = () => {
               </ListSubheader>
             }
           >
-            <ListItem alignItems="flex-start">
-              <ListItemAvatar>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Brunch this weekend?"
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      className={classes.inline}
-                      color="textPrimary"
-                    >
-                      Ali Connors
-                    </Typography>
-                    {" — I'll be in your neighborhood doing errands this…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-            <Divider variant="inset" component="li" />
-            <ListItem alignItems="flex-start">
-              <ListItemAvatar>
-                <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Summer BBQ"
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      className={classes.inline}
-                      color="textPrimary"
-                    >
-                      to Scott, Alex, Jennifer
-                    </Typography>
-                    {" — Wish I could come, but I'm out of town this…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-            <Divider variant="inset" component="li" />
-            <ListItem alignItems="flex-start">
-              <ListItemAvatar>
-                <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Oui Oui"
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      className={classes.inline}
-                      color="textPrimary"
-                    >
-                      Sandra Adams
-                    </Typography>
-                    {" — Do you have Paris recommendations? Have you ever…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
+            {exhibitions.map((item) => {
+              let exhibitionCategory = ExhibitionCategories.find(
+                (category) => category.label === item.category
+              );
+              let ExhibitionIcon = exhibitionCategory
+                ? exhibitionCategory.Icon
+                : null;
+              return (
+                <ListItem key={item.id} alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar>
+                      {ExhibitionIcon ? (
+                        <ExhibitionIcon />
+                      ) : item && item.title && item.title[0] ? (
+                        item.title[0]
+                      ) : (
+                        ""
+                      )}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={item.title}
+                    secondary={
+                      <>
+                        <div>
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            className={classes.inline}
+                            color="textPrimary"
+                          >
+                            {item.description}
+                          </Typography>
+                        </div>
+                        <div className={globalClasses.mt10}>
+                          {item.startDate} - {item.endDate}
+                        </div>
+                      </>
+                    }
+                  />
+                </ListItem>
+              );
+            })}
           </List>
         </Grid>
       </Grid>

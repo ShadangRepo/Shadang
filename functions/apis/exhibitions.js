@@ -100,8 +100,14 @@ router.get("/items", async (req, res) => {
                 let exhibitionData = { ...exhibitionResponse.data };
                 //check if exhibition is live
                 if (moment(exhibitionData.startDate.toDate()).isSameOrBefore(moment()) && moment(exhibitionData.endDate.toDate()).isSameOrAfter(moment())) {
-                    const exhibitionItemsResponse = await dbHandler.conditionBasedReadAll(TableName.exhibitionFiles, "exhibitionId", "==", req.query.exhibitionId);
-                    res.send(exhibitionItemsResponse)
+                    let exhibitionItemsResponse = await dbHandler.conditionBasedReadAll(TableName.exhibitionFiles, "exhibitionId", "==", req.query.exhibitionId);
+                    let images = [];
+                    if (exhibitionItemsResponse.success && exhibitionItemsResponse.data) {
+                        images = exhibitionItemsResponse.data.filter(item => item.active);
+                        res.send({ success: true, data: images })
+                    } else {
+                        res.send(exhibitionItemsResponse);
+                    }
                 } else {
                     res.send({ success: false, message: `This exhibition is not runing now` })
                 }
