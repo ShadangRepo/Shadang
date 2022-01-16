@@ -43,7 +43,7 @@ router.post("/create", async (req, res) => {
             }
         }
     } catch (error) {
-        res.send({ success: false, message: `${error}` })
+        res.send({ success: false, message: error.message })
     }
 });
 
@@ -56,7 +56,8 @@ router.get("/myExhibitions", async (req, res) => {
                 ...item,
                 startDate: item.startDate.toDate(),
                 endDate: item.endDate.toDate(),
-                createdAt: item.createdAt.toDate()
+                createdAt: item.createdAt.toDate(),
+                updatedAt: item.updatedAt ? item.updatedAt.toDate() : null
             }));
             res.send(response)
         } else {
@@ -64,7 +65,7 @@ router.get("/myExhibitions", async (req, res) => {
         }
 
     } catch (error) {
-        res.send({ success: false, message: error })
+        res.send({ success: false, message: error.message })
     }
 });
 
@@ -85,7 +86,7 @@ router.get("/list", async (req, res) => {
             res.send(exhibitionResponse)
         }
     } catch (error) {
-        res.send({ success: false, message: `${error}` })
+        res.send({ success: false, message: error.message })
     }
 });
 
@@ -111,7 +112,7 @@ router.get("/items", async (req, res) => {
             res.send({ success: false, message: `Exhibition id is required` })
         }
     } catch (error) {
-        res.send({ success: false, message: `${error}` })
+        res.send({ success: false, message: error.message })
     }
 });
 
@@ -132,7 +133,7 @@ router.put("/like-item", async (req, res) => {
             res.send(likeResponse);
         }
     } catch (error) {
-        res.send({ success: false, message: `${error}` })
+        res.send({ success: false, message: error.message })
     }
 });
 
@@ -150,7 +151,12 @@ router.get("/details", async (req, res) => {
                     createdAt: exhibitionResponse.data.createdAt.toDate()
                 };
                 const exhibitionItemsResponse = await dbHandler.conditionBasedReadAll(TableName.exhibitionFiles, "exhibitionId", "==", req.query.exhibitionId);
-                exhibitionData.images = exhibitionItemsResponse.data;
+                exhibitionData.images = exhibitionItemsResponse.success && exhibitionItemsResponse.data ? exhibitionItemsResponse.data
+                    .map(item => ({
+                        ...item,
+                        createdAt: item.createdAt ? item.createdAt.toDate() : null,
+                        updatedAt: item.updatedAt ? item.updatedAt.toDate() : null
+                    })) : [];
                 res.send({ success: true, data: exhibitionData });
             } else {
                 res.send(exhibitionResponse);
@@ -159,7 +165,54 @@ router.get("/details", async (req, res) => {
             res.send({ success: false, message: `Exhibition id is required` })
         }
     } catch (error) {
-        res.send({ success: false, message: `${error}` })
+        res.send({ success: false, message: error.message })
+    }
+});
+
+router.put("/update", async (req, res) => {
+    let body = req.body;
+    let user = req.decodedUser;
+    try {
+        if (!body.title) {
+            res.send({ success: false, message: "Title is required" });
+        } else if (!body.category) {
+            res.send({ success: false, message: "Category is required" });
+        } else if (!body.startDate) {
+            res.send({ success: false, message: "Start date is required" });
+        } else if (!body.endDate) {
+            res.send({ success: false, message: "End date is required" });
+        } else {
+            let exhibitionDetails = { ...body, createdBy: user.id };
+            exhibitionDetails.startDate = Timestamp.fromDate(new Date(exhibitionDetails.startDate))
+            exhibitionDetails.endDate = Timestamp.fromDate(new Date(exhibitionDetails.endDate))
+            delete exhibitionDetails.images;
+            const response = await dbHandler.update(TableName.exhibitions, body.id, exhibitionDetails);
+            if (response.success) {
+                var formattedImages = body.images ? body.images.map(item => ({
+                    ...item,
+                    exhibitionId: response.data.id,
+                    likedBy: []
+                })) : [];
+                let existingImages = formattedImages.filter(item => item.id).map(item => {
+                    let image = { ...item };
+                    delete image.likedBy;
+                    delete image.url;
+                    return image;
+                });
+                let newImages = formattedImages.filter(item => !item.id);
+                if (existingImages && existingImages.length > 0) {
+                    await dbHandler.batchSet(TableName.exhibitionFiles, existingImages);//update existing images
+                }
+                if (newImages && newImages.length > 0) {
+                    await dbHandler.batchCreate(TableName.exhibitionFiles, newImages)//create new records
+                }
+                res.send({ success: true, message: "Exhibition created successfully" });
+            } else {
+                res.send(response);
+            }
+        }
+    } catch (error) {
+        res.send({ success: false, message: error.message })
     }
 });
 

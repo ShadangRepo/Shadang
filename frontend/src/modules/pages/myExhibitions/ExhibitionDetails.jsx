@@ -1,4 +1,11 @@
-import { FormControlLabel, Grid, MenuItem, Switch, TextField, Typography } from "@material-ui/core";
+import {
+  FormControlLabel,
+  Grid,
+  MenuItem,
+  Switch,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router";
 import { FormPage } from "../../common/FormPage";
@@ -44,7 +51,9 @@ const ExhibitionDetails = () => {
     if (`${exhibitionId}` !== "0") {
       try {
         setLoading(true);
-        let query = await proxyClient.get("/exhibitions/details", { exhibitionId });
+        let query = await proxyClient.get("/exhibitions/details", {
+          exhibitionId,
+        });
         const response = query.response;
         if (response.success) {
           response.data && setExhibitionDetails(response.data);
@@ -53,13 +62,14 @@ const ExhibitionDetails = () => {
             status: NotificationStatus.Error,
             message: response.message,
           });
+          history.push("/my-exhibitions");
         }
         setLoading(false);
       } catch (err) {
         queueNotification(err);
       }
     }
-  }
+  };
 
   useEffect(() => {
     fetchDetails();
@@ -135,12 +145,18 @@ const ExhibitionDetails = () => {
       <Grid item xs={12} md={12} className={globalClasses.justifyContentCenter}>
         <FormPage
           onSave={handleSaveExhibition}
-          onCancel={() => history.push(`${path.split("/").slice(0, -1).join("/")}`)}
+          onCancel={() =>
+            history.push(`${path.split("/").slice(0, -1).join("/")}`)
+          }
           blocked={saveStatus.isSaving || loading}
         >
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Typography variant="h6">{`${exhibitionId}` === "0" ? "Create New Exhibition" : "Exhibition details"}</Typography>
+              <Typography variant="h6">
+                {`${exhibitionId}` === "0"
+                  ? "Create New Exhibition"
+                  : "Exhibition details"}
+              </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
@@ -152,7 +168,9 @@ const ExhibitionDetails = () => {
                 label="Title"
                 variant="outlined"
                 value={exhibitionDetails.title}
-                onChange={(event) => updateFields({ title: event.target.value })}
+                onChange={(event) =>
+                  updateFields({ title: event.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -166,9 +184,13 @@ const ExhibitionDetails = () => {
                 label="Category"
                 variant="outlined"
                 value={exhibitionDetails.category}
-                onChange={(event) => updateFields({ category: event.target.value })}
+                onChange={(event) =>
+                  updateFields({ category: event.target.value })
+                }
               >
-                <MenuItem key={"-1"} value={""}>Select</MenuItem>
+                <MenuItem key={"-1"} value={""}>
+                  Select
+                </MenuItem>
                 {ExhibitionCategories.map(({ label, Icon }) => (
                   <MenuItem key={label} value={label}>
                     {label}
@@ -186,7 +208,9 @@ const ExhibitionDetails = () => {
                   id="startDate"
                   label="Start Date"
                   value={exhibitionDetails.startDate || null}
-                  onChange={(date) => updateFields({ startDate: new Date(date) })}
+                  onChange={(date) =>
+                    updateFields({ startDate: new Date(date) })
+                  }
                   error={!!errors.startDate}
                   helperText={errors.startDate}
                   variant="inline"
@@ -213,14 +237,19 @@ const ExhibitionDetails = () => {
               </MuiPickersUtilsProvider>
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel control={
-                <Switch
-                  id="isGroupExhibition"
-                  color="primary"
-                  checked={exhibitionDetails.isGroupExhibition}
-                  onChange={(event) => updateFields({ isGroupExhibition: event.target.checked })}
-                />}
-                label="Is Group Exhibition?" />
+              <FormControlLabel
+                control={
+                  <Switch
+                    id="isGroupExhibition"
+                    color="primary"
+                    checked={exhibitionDetails.isGroupExhibition}
+                    onChange={(event) =>
+                      updateFields({ isGroupExhibition: event.target.checked })
+                    }
+                  />
+                }
+                label="Is Group Exhibition?"
+              />
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -237,14 +266,16 @@ const ExhibitionDetails = () => {
                 }
               />
             </Grid>
-            {!loading && <Grid item xs={12}>
-              <UploadHandler
-                multiple={true}
-                accept="image/*"
-                defaultValue={exhibitionDetails.images}
-                onChange={(urlList) => onImagesChange(urlList)}
-              />
-            </Grid>}
+            {!loading && (
+              <Grid item xs={12}>
+                <UploadHandler
+                  multiple={true}
+                  accept="image/*"
+                  defaultValue={exhibitionDetails.images}
+                  onChange={(urlList) => onImagesChange(urlList)}
+                />
+              </Grid>
+            )}
           </Grid>
         </FormPage>
       </Grid>

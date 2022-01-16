@@ -11,14 +11,17 @@ const {
     addDoc,
     writeBatch,
     updateDoc,
-    Timestamp
+    Timestamp,
+    setDoc
 } = require('firebase/firestore');
 const db = getFirestore(firebase);
 
 const create = (tableName, data) => {
     return new Promise(async (resolve) => {
         const tableRef = collection(db, tableName);
-        const docRef = await addDoc(tableRef, { ...data, createdAt: Timestamp.fromDate(new Date()) });
+        let dataToCreate = { ...data, createdAt: Timestamp.fromDate(new Date()), updatedAt: Timestamp.fromDate(new Date()) };
+        delete dataToCreate.id;
+        const docRef = await addDoc(tableRef, dataToCreate);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             resolve({ success: true, data: { id: docSnap.id, ...docSnap.data() } });
@@ -71,12 +74,29 @@ const conditionBasedReadOne = (tableName, lhs, condition, rhs) => {
 const batchCreate = (tableName, data) => {
     //data is expected to be array of objects
     return new Promise((resolve) => {
-        var batch = writeBatch(db);
         const tableRef = collection(db, tableName);
         data.forEach(async (element) => {
+            delete element.id;
             //this code needs to optimize. this is not batch operation. Firebase provides batch writes, but not batch create.need to check documentation.
-            await addDoc(tableRef, element);
+            await addDoc(tableRef, { ...element, updatedAt: Timestamp.fromDate(new Date()), createdAt: Timestamp.fromDate(new Date()) });
         });
+        resolve({ success: true, data: {}, message: BatchOperationSuccessMessage })
+    })
+}
+
+const batchSet = (tableName, data) => {
+    //data is expected to be array of objects
+    //set will change only one key in object
+    return new Promise(async (resolve) => {
+        const batch = writeBatch(db);
+        data.forEach(async (element) => {
+            let docRef = doc(db, tableName, element.id);
+            let dataToset = { ...element, updatedAt: Timestamp.fromDate(new Date()) };
+            delete dataToset.id;
+            delete dataToset.createdAt;
+            batch.set(docRef, dataToset, { merge: true })
+        });
+        await batch.commit();
         resolve({ success: true, data: {}, message: BatchOperationSuccessMessage })
     })
 }
@@ -99,7 +119,10 @@ const update = async (tableName, id, payload) => {
     return new Promise(async (resolve) => {
         try {
             const docRef = doc(db, tableName, id);
-            await updateDoc(docRef, payload);
+            let dataToUpdate = { ...payload, updatedAt: Timestamp.fromDate(new Date()) }
+            delete dataToUpdate.createdAt;
+            delete dataToUpdate.id;
+            await setDoc(docRef, dataToUpdate, { merge: true });
             resolve({ success: true, data: { id } })
         } catch (err) {
             resolve({ success: false, message: `${err}` })
@@ -113,5 +136,6 @@ module.exports = {
     batchCreate,
     conditionBasedReadAll,
     readDocBasedOnId,
-    update
+    update,
+    batchSet
 }

@@ -1,4 +1,11 @@
-import { Button, FormControlLabel, Grid, makeStyles, Switch, Typography } from "@material-ui/core";
+import {
+  Button,
+  FormControlLabel,
+  Grid,
+  makeStyles,
+  Switch,
+  Typography,
+} from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { storage } from "../firebase";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -48,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 20,
   },
   checkLabel: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }));
 
 const UploadHandler = (props) => {
@@ -58,7 +65,7 @@ const UploadHandler = (props) => {
     multiple,
     accept,
     onChange, //onChange function is triggered on upload complete and change of active status of image
-    defaultValue //if we want to show some already uploaded images then assign it to default value. it should be array of objects of format {id:"",url:"",active:""}
+    defaultValue, //if we want to show some already uploaded images then assign it to default value. it should be array of objects of format {id:"",url:"",active:""}
   } = props;
   const classes = useStyles();
   const globalClasses = useGlobalStyles();
@@ -95,7 +102,6 @@ const UploadHandler = (props) => {
             setProgress(progress);
           },
           (error) => {
-            console.log("Upload error: ", error);
             return false;
           },
           () => {
@@ -116,7 +122,11 @@ const UploadHandler = (props) => {
                   setUploadedFiles(progressData);
                 } else {
                   setUploadedFiles(progressData);
-                  let urlList = progressData.map(({ url, active }) => ({ url, active }));
+                  let urlList = progressData.map(({ url, active, id }) => ({
+                    url,
+                    active,
+                    id: typeof id === "number" ? null : id,
+                  }));
                   onChange(urlList);
                 }
               });
@@ -131,7 +141,11 @@ const UploadHandler = (props) => {
           setUploadedFiles(progressData);
         } else {
           setUploadedFiles(progressData);
-          let urlList = progressData.map(({ url, active }) => ({ url, active }));
+          let urlList = progressData.map(({ url, active, id }) => ({
+            url,
+            active,
+            id: typeof id === "number" ? null : id,
+          }));
           onChange(urlList);
         }
       }
@@ -163,7 +177,7 @@ const UploadHandler = (props) => {
         const newFileData = {
           file: files[i],
           url: null,
-          active: true
+          active: true,
         };
         newFileData["id"] = Math.floor(Math.random() * 10000000000000);
         setFilesToUpload((prevState) => [...prevState, newFileData]);
@@ -173,21 +187,36 @@ const UploadHandler = (props) => {
 
   const changeActiveStatus = (checked, url) => {
     let newImages = [...uploadedFiles]; // If you are changing status means uploaded files and files to upload are same
-    newImages = newImages.map(item => item.url === url ? { ...item, active: checked } : item);
+    newImages = newImages.map((item) =>
+      item.url === url ? { ...item, active: checked } : item
+    );
     setFilesToUpload([...newImages]);
     setUploadedFiles([...newImages]);
-    let urlList = newImages.map(({ url, active }) => ({ url, active }));
+    let urlList = newImages.map(({ url, active, id }) => ({
+      url,
+      active,
+      id: typeof id === "number" ? null : id,
+    }));
     onChange(urlList);
-  }
+  };
 
-  let uploadInProgress = filesToUpload.length > 0 && (filesToUpload.length !== uploadedFiles.length || (filesToUpload.length === uploadedFiles.length && progress !== 100));
+  let uploadInProgress =
+    filesToUpload.length > 0 &&
+    (filesToUpload.length !== uploadedFiles.length ||
+      (filesToUpload.length === uploadedFiles.length && progress !== 100));
 
   return (
     <Grid container spacing={2} className={classes.root}>
       <Grid item container xs={12} className={classes.uploadContainer}>
         {uploadedFiles.length > 0 ? (
           uploadedFiles.map((item, i) => (
-            <Grid item xs={6} md={3} key={`${i}`} className={`${globalClasses.justifyContentCenter}`}>
+            <Grid
+              item
+              xs={6}
+              md={3}
+              key={`${i}`}
+              className={`${globalClasses.justifyContentCenter}`}
+            >
               {item && item.url ? (
                 <div className={globalClasses.flexColumn}>
                   <img
@@ -195,19 +224,25 @@ const UploadHandler = (props) => {
                     alt="file"
                     className={classes.filePreview}
                   />
-                  {!uploadInProgress && <div className={globalClasses.justifyContentCenter}>
-                    <FormControlLabel
-                      classes={{ label: classes.checkLabel }}
-                      control={
-                        <Switch
-                          id="active"
-                          color="primary"
-                          size="small"
-                          checked={item.active}
-                          onChange={event => changeActiveStatus(event.target.checked, item.url)}
-                        />}
-                      label="Active" />
-                  </div>}
+                  {!uploadInProgress && (
+                    <div className={globalClasses.justifyContentCenter}>
+                      <FormControlLabel
+                        classes={{ label: classes.checkLabel }}
+                        control={
+                          <Switch
+                            id="active"
+                            color="primary"
+                            size="small"
+                            checked={item.active}
+                            onChange={(event) =>
+                              changeActiveStatus(event.target.checked, item.url)
+                            }
+                          />
+                        }
+                        label="Active"
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
                 <Box
