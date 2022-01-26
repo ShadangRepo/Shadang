@@ -1,4 +1,4 @@
-import { Chip, Grid, Typography } from "@material-ui/core";
+import { Chip, Grid, Paper, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../common/AppContext";
 import { useCatalogStyles } from "./catalogStyles";
@@ -9,13 +9,36 @@ import { NotificationStatus } from "../../common/Notifications";
 import { useHistory } from "react-router-dom";
 import FiberManualRecordOutlinedIcon from "@material-ui/icons/FiberManualRecordOutlined";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import moment from "moment";
+import { dateFormat1, ExhibitionCategories } from "../../shared/constants";
+import { Avatar } from "@material-ui/core";
+import { useGlobalStyles } from "../../shared/globalStyles";
 
 const Catalog = () => {
   const classes = useCatalogStyles();
   const { isMobile, queueNotification } = useContext(AppContext);
   const [exhibitions, setExhibitions] = useState([]);
+  const [users, setUsers] = useState([]);
   const history = useHistory();
+  const globalClasses = useGlobalStyles();
   let waitForDoorOpen = null;
+
+  const getUserList = async () => {
+    try {
+      const query = await proxyClient.get("/users/userList");
+      const response = query.response;
+      if (response.success) {
+        setUsers(response.data);
+      } else {
+        queueNotification({
+          status: NotificationStatus.Error,
+          message: response.message,
+        });
+      }
+    } catch (err) {
+      queueNotification(err);
+    }
+  };
 
   const getExhibitionList = async () => {
     try {
@@ -36,6 +59,7 @@ const Catalog = () => {
 
   useEffect(() => {
     getExhibitionList();
+    getUserList();
     return () => {
       clearTimeout(waitForDoorOpen);
     };
@@ -86,55 +110,121 @@ const Catalog = () => {
       </Grid>
       <Grid item xs={12} className={classes.exhibitionItemsRoot}>
         {exhibitions &&
-          exhibitions.map((item) => (
-            <div key={item.id} className={classes.exhibitionDoor}>
-              <div className={classes.doorLeft} id={`left_${item.id}`}>
-                <Typography className={classes.doorText}>WelCome to</Typography>
-              </div>
-              <div className={classes.doorRight} id={`right_${item.id}`}>
-                <Typography className={classes.doorText}>
-                  {item.title}
-                </Typography>
-                {item.isLive && (
-                  <Typography
-                    className={classes.openText}
-                    onClick={() => openDoor(item.id)}
-                  >
-                    Open
-                  </Typography>
-                )}
-                {item.isLive ? (
-                  <Chip
-                    label="Live"
-                    variant="outlined"
-                    color="primary"
-                    className={classes.exhibitionStatusChip}
-                    size={isMobile ? "small" : "medium"}
-                    avatar={
-                      <FiberManualRecordIcon
-                        color="primary"
-                        classes={{ colorPrimary: classes.liveDot }}
-                      />
-                    }
-                  />
-                ) : (
-                  <Chip
-                    label="Comming soon"
-                    variant="outlined"
-                    color="primary"
-                    className={classes.exhibitionStatusChip}
-                    size={isMobile ? "small" : "medium"}
-                    avatar={
-                      <FiberManualRecordOutlinedIcon
-                        color="primary"
-                        classes={{ colorPrimary: classes.upcommingDot }}
-                      />
-                    }
-                  />
-                )}
-              </div>
-            </div>
-          ))}
+          exhibitions.map((item) => {
+            let exhibitionCategory = ExhibitionCategories.find(
+              (category) => category.label === item.category
+            );
+            let ExhibitionIcon = exhibitionCategory
+              ? exhibitionCategory.Icon
+              : null;
+
+            let author = users && users.find(user => user.id === item.createdBy);
+            return (
+              <Grid key={item.id} container spacing={2}>
+                {!isMobile && <Grid item xs={12} md={4} className={classes.UserDetailsContainer}>
+                  <Paper className={`${classes.userCard} ${classes.exhibitionItemCommonStyle}`}>
+                    <div>
+                      <div className={classes.userCardHeader} />
+                      {author ? <>
+                        <div className={classes.userInfo}>
+                          <div>
+                            {author.profilePic ?
+                              (<Avatar alt={`${author.firstName} ${author.lastName}`} src={author.profilePic} />) :
+                              (<Avatar>
+                                {`${author.firstName[0]}${author.lastName[0]}`}
+                              </Avatar>
+                              )}
+                          </div>
+                          <div className={`${globalClasses.ml10} ${globalClasses.mr10}`}>
+                            <Typography className={classes.boldText}>
+                              {`${author.firstName} ${author.lastName}`}
+                            </Typography>
+                          </div>
+                        </div>
+                        <div>
+                        </div>
+                      </> :
+                        <Typography className={classes.exhibitionDescription}>
+                          Author details not found.
+                        </Typography>}
+                    </div>
+                  </Paper>
+                </Grid>}
+                <Grid item xs={12} md={8}>
+                  <Paper className={`${classes.exhibitionDoor} ${classes.exhibitionItemCommonStyle}`}>
+                    <div className={classes.doorLeft} id={`left_${item.id}`}>
+                      <div className={classes.avatarContainer}>
+                        <Avatar>
+                          {ExhibitionIcon ? (
+                            <ExhibitionIcon />
+                          ) : item.title[0]}
+                        </Avatar>
+                        <div className={classes.exhibitionMeta}>
+                          <Typography className={classes.boldText}>
+                            {item.category} Exhibition
+                          </Typography>
+                          {item.isLive ?
+                            <Typography className={classes.exhibitionDate}>
+                              Open till: {moment(item.endDate).format(dateFormat1)}
+                            </Typography> :
+                            <Typography className={classes.exhibitionDate}>
+                              Opening on: {moment(item.startDate).format(dateFormat1)}
+                            </Typography>
+                          }
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className={classes.doorRight} id={`right_${item.id}`}>
+                      <Typography className={classes.doorText}>
+                        {item.title}
+                      </Typography>
+                      <Typography className={classes.exhibitionDescription}>
+                        {item.description}
+                      </Typography>
+                      {item.isLive ? (
+                        <Chip
+                          label="Live"
+                          variant="outlined"
+                          color="primary"
+                          className={classes.exhibitionStatusChip}
+                          size={"small"}
+                          avatar={
+                            <FiberManualRecordIcon
+                              color="primary"
+                              classes={{ colorPrimary: classes.liveDot }}
+                            />
+                          }
+                        />
+                      ) : (
+                        <Chip
+                          label="Comming soon"
+                          variant="outlined"
+                          color="primary"
+                          className={classes.exhibitionStatusChip}
+                          size={"small"}
+                          avatar={
+                            <FiberManualRecordOutlinedIcon
+                              color="primary"
+                              classes={{ colorPrimary: classes.upcommingDot }}
+                            />
+                          }
+                        />
+                      )}
+                    </div>
+                    {item.isLive && (
+                      <Typography
+                        className={classes.openText}
+                        onClick={() => openDoor(item.id)}
+                      >
+                        Visit
+                      </Typography>
+                    )}
+                  </Paper>
+                </Grid>
+              </Grid>
+            )
+          })}
       </Grid>
     </Grid>
   );

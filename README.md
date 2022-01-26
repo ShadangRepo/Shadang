@@ -9,4 +9,4 @@ Sell handmade products
 3. Disable screenshot or snipping tool
 4. Hide image url in Inspect element tool
 5. Enter to submit on login page
-6. Update exhibition api
+6. Fonts setting in exhibition or user profile or global setting

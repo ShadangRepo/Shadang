@@ -42,42 +42,40 @@ export const useCatalogStyles = makeStyles((theme) => ({
         alignItems: "center",
         flexDirection: "column"
     },
-
+    exhibitionItemCommonStyle: {
+        height: 350,
+        borderRadius: 26,
+        marginTop: 20,
+        [theme.breakpoints.down("sm")]: {
+            height: 220
+        },
+    },
     exhibitionDoor: {
         backgroundSize: "cover",
         backgroundColor: "#fff",
-        height: 500,
-        border: "solid 3px #006baf",
-        textAlign: "center",
         position: "relative",
         overflow: "hidden",
-        width: "75%",
-        marginTop: 20,
+        width: "80%",
+        border: "solid 3px #fff",
         [theme.breakpoints.down("sm")]: {
             width: "100%",
-            height: 250
         },
     },
     doorText: {
-        backgroundColor: "rgba(253,217,33,0.50)",
-        color: "#333",
+        color: theme.palette.primary.main,
         fontSize: 24,
         fontWeight: "bold",
-        height: 45,
-        border: "solid 1px rgba(0,0,0,0.15)",
-        borderWidth: "1px 0",
-        position: "absolute",
-        top: "50%",
-        padding: "0 0 0 20px",
+        padding: 20,
+        lineHeight: 1,
         left: "1px",
         right: "1px",
-        marginTop: "-22.5px",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        width: `calc(100% - 40px)`,
+        whiteSpace: "break-spaces",
         [theme.breakpoints.down("sm")]: {
             fontSize: 18,
-            height: 36,
+            padding: 10,
         },
     },
     doorLeft: {
@@ -87,7 +85,7 @@ export const useCatalogStyles = makeStyles((theme) => ({
         bottom: 0,
         width: "50%",
         transition: "1s ease-in-out",
-        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
+        // boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
         background: "rgba(226,226,226,0.35)",
         background: "-moz-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
         background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(226,226,226,0.35)), color-stop(50%, rgba(219,219,219,0.35)), color-stop(51%, rgba(209,209,209,0.35)), color-stop(100%, rgba(254,254,254,0.35)))",
@@ -104,7 +102,7 @@ export const useCatalogStyles = makeStyles((theme) => ({
         bottom: 0,
         width: "50%",
         transition: "1s ease-in-out",
-        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
+        // boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
         background: "rgba(226,226,226,0.35)",
         background: "-moz-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
         background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(226,226,226,0.35)), color-stop(50%, rgba(219,219,219,0.35)), color-stop(51%, rgba(209,209,209,0.35)), color-stop(100%, rgba(254,254,254,0.35)))",
@@ -116,18 +114,20 @@ export const useCatalogStyles = makeStyles((theme) => ({
     },
     openText: {
         position: "absolute",
-        top: "60%",
+        top: "50%",
+        left: "calc(50% - 50px)",
         padding: 5,
-        backgroundColor: "#006400",
+        backgroundColor: theme.palette.primary.main,
         color: "#fff",
         fontWeight: "bold",
-        marginLeft: 10,
         width: 100,
         borderRadius: 10,
         cursor: "pointer",
+        textAlign: "center",
         [theme.breakpoints.down("sm")]: {
             fontSize: 12,
             width: 80,
+            left: "calc(50% - 40px)",
         },
     },
     exhibitionStatusChip: {
@@ -137,10 +137,63 @@ export const useCatalogStyles = makeStyles((theme) => ({
     },
     liveDot: {
         color: `#f00 !important`,
-        backgroundColor: "#fff !important"
+        backgroundColor: "#fff0 !important"
     },
     upcommingDot: {
         color: `${theme.palette.primary.main} !important`,
-        backgroundColor: "#fff !important"
+        backgroundColor: "#fff0 !important"
+    },
+    UserDetailsContainer: {
+        display: "flex",
+        justifyContent: "end"
+    },
+    exhibitionDescription: {
+        padding: "0 20px 0 20px",
+        fontSize: 12,
+        color: "#808080",
+        textAlign: "justify",
+        [theme.breakpoints.down("sm")]: {
+            padding: "0 10px 0 10px",
+        },
+    },
+    exhibitionDate: {
+        fontSize: 12,
+        color: "#808080",
+    },
+    boldText: {
+        fontSize: 12,
+        color: "#808080",
+        fontWeight: "bold",
+    },
+    avatarContainer: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 20,
+        fontSize: 12
+    },
+    exhibitionMeta: {
+        padding: "0 10px 0 10px"
+    },
+    userCard: {
+        display: "flex",
+        flexDirection: "column",
+        width: "60%",
+        border: "solid 0px #fff",
+        overflow: "hidden"
+    },
+    userCardHeader: {
+        backgroundColor: theme.palette.primary.main,
+        height: 40
+    },
+    userInfo: {
+        height: 105,//calculated as 30 % of total height of exhibitionDoor
+        backgroundColor: "#F0F0F0",
+        display: "flex",
+        alignItems: "center",
+        padding: 10,
+        [theme.breakpoints.down("sm")]: {
+            height: 66
+        },
     }
 }))

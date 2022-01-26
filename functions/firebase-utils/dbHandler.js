@@ -18,15 +18,19 @@ const db = getFirestore(firebase);
 
 const create = (tableName, data) => {
     return new Promise(async (resolve) => {
-        const tableRef = collection(db, tableName);
-        let dataToCreate = { ...data, createdAt: Timestamp.fromDate(new Date()), updatedAt: Timestamp.fromDate(new Date()) };
-        delete dataToCreate.id;
-        const docRef = await addDoc(tableRef, dataToCreate);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            resolve({ success: true, data: { id: docSnap.id, ...docSnap.data() } });
-        } else {
-            resolve({ success: false, message: DocumentNotExistMessage });
+        try {
+            const tableRef = collection(db, tableName);
+            let dataToCreate = { ...data, createdAt: Timestamp.fromDate(new Date()), updatedAt: Timestamp.fromDate(new Date()) };
+            delete dataToCreate.id;
+            const docRef = await addDoc(tableRef, dataToCreate);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                resolve({ success: true, data: { id: docSnap.id, ...docSnap.data() } });
+            } else {
+                resolve({ success: false, message: DocumentNotExistMessage });
+            }
+        } catch (err) {
+            resolve({ success: false, message: err.message })
         }
     })
 }
@@ -42,7 +46,7 @@ const readDocBasedOnId = async (tableName, id) => {
                 resolve({ success: false, message: DocumentNotExistMessage });
             }
         } catch (err) {
-            resolve({ success: false, message: `${err}` })
+            resolve({ success: false, message: err.message })
         }
     })
 }
@@ -54,19 +58,23 @@ const conditionBasedReadOne = (tableName, lhs, condition, rhs) => {
     // Reference https://firebase.google.com/docs/firestore/query-data/queries
 
     return new Promise(async (resolve) => {
-        const tableRef = collection(db, tableName);
-        let q = query(tableRef, where(lhs, condition, rhs))
+        try {
+            const tableRef = collection(db, tableName);
+            let q = query(tableRef, where(lhs, condition, rhs))
 
-        let response = [];
-        let querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            response.push({ id: doc.id, ...doc.data() })
-        });
-        if (response.length > 0) {
-            resolve({ success: true, data: response[0] })
-        } else {
-            resolve({ success: false, message: DocumentNotExistMessage })
+            let response = [];
+            let querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                response.push({ id: doc.id, ...doc.data() })
+            });
+            if (response.length > 0) {
+                resolve({ success: true, data: response[0] })
+            } else {
+                resolve({ success: false, message: DocumentNotExistMessage })
+            }
+        } catch (err) {
+            resolve({ success: false, message: err.message })
         }
     })
 }
@@ -74,13 +82,17 @@ const conditionBasedReadOne = (tableName, lhs, condition, rhs) => {
 const batchCreate = (tableName, data) => {
     //data is expected to be array of objects
     return new Promise((resolve) => {
-        const tableRef = collection(db, tableName);
-        data.forEach(async (element) => {
-            delete element.id;
-            //this code needs to optimize. this is not batch operation. Firebase provides batch writes, but not batch create.need to check documentation.
-            await addDoc(tableRef, { ...element, updatedAt: Timestamp.fromDate(new Date()), createdAt: Timestamp.fromDate(new Date()) });
-        });
-        resolve({ success: true, data: {}, message: BatchOperationSuccessMessage })
+        try {
+            const tableRef = collection(db, tableName);
+            data.forEach(async (element) => {
+                delete element.id;
+                //this code needs to optimize. this is not batch operation. Firebase provides batch writes, but not batch create.need to check documentation.
+                await addDoc(tableRef, { ...element, updatedAt: Timestamp.fromDate(new Date()), createdAt: Timestamp.fromDate(new Date()) });
+            });
+            resolve({ success: true, data: {}, message: BatchOperationSuccessMessage })
+        } catch (err) {
+            resolve({ success: false, message: err.message })
+        }
     })
 }
 
@@ -88,30 +100,56 @@ const batchSet = (tableName, data) => {
     //data is expected to be array of objects
     //set will change only one key in object
     return new Promise(async (resolve) => {
-        const batch = writeBatch(db);
-        data.forEach(async (element) => {
-            let docRef = doc(db, tableName, element.id);
-            let dataToset = { ...element, updatedAt: Timestamp.fromDate(new Date()) };
-            delete dataToset.id;
-            delete dataToset.createdAt;
-            batch.set(docRef, dataToset, { merge: true })
-        });
-        await batch.commit();
-        resolve({ success: true, data: {}, message: BatchOperationSuccessMessage })
+        try {
+            const batch = writeBatch(db);
+            data.forEach(async (element) => {
+                let docRef = doc(db, tableName, element.id);
+                let dataToset = { ...element, updatedAt: Timestamp.fromDate(new Date()) };
+                delete dataToset.id;
+                delete dataToset.createdAt;
+                batch.set(docRef, dataToset, { merge: true })
+            });
+            await batch.commit();
+            resolve({ success: true, data: {}, message: BatchOperationSuccessMessage })
+        } catch (err) {
+            resolve({ success: false, message: err.message })
+        }
     })
 }
 
 const conditionBasedReadAll = (tableName, lhs, condition, rhs) => {
     return new Promise(async (resolve) => {
-        const tableRef = collection(db, tableName);
-        const q = query(tableRef, where(lhs, condition, rhs));
+        try {
+            const tableRef = collection(db, tableName);
+            const q = query(tableRef, where(lhs, condition, rhs));
 
-        const querySnapshot = await getDocs(q);
-        let data = [];
-        querySnapshot.forEach(doc => {
-            data.push({ id: doc.id, ...doc.data() })
-        });
-        resolve({ success: true, data: data });
+            const querySnapshot = await getDocs(q);
+            let data = [];
+            querySnapshot.forEach(doc => {
+                data.push({ id: doc.id, ...doc.data() })
+            });
+            resolve({ success: true, data: data });
+        } catch (err) {
+            resolve({ success: false, message: err.message })
+        }
+    })
+}
+
+const readAll = (tableName) => {
+    return new Promise(async (resolve) => {
+        try {
+            const tableRef = collection(db, tableName);
+            const q = query(tableRef);
+
+            const querySnapshot = await getDocs(q);
+            let data = [];
+            querySnapshot.forEach(doc => {
+                data.push({ id: doc.id, ...doc.data() })
+            });
+            resolve({ success: true, data: data });
+        } catch (err) {
+            resolve({ success: false, message: err.message })
+        }
     })
 }
 
@@ -125,7 +163,7 @@ const update = async (tableName, id, payload) => {
             await setDoc(docRef, dataToUpdate, { merge: true });
             resolve({ success: true, data: { id } })
         } catch (err) {
-            resolve({ success: false, message: `${err}` })
+            resolve({ success: false, message: err.message })
         }
     })
 }
@@ -137,5 +175,6 @@ module.exports = {
     conditionBasedReadAll,
     readDocBasedOnId,
     update,
-    batchSet
+    batchSet,
+    readAll
 }

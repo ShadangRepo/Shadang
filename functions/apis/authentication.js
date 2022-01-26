@@ -92,22 +92,6 @@ router.post("/signup", async (req, res) => {
     }
 });
 
-router.get("/getUserDetails", verifyToken, async (req, res) => {
-    if (req.decodedUser) {
-        const response = await dbHandler.readDocBasedOnId(TableName.users, req.decodedUser.id);
-        if (!response.success && response.message === constants.DocumentNotExistMessage) {
-            res.send({ success: false, message: "User does not exist" });
-        } else if (response.success && response.data) {
-            delete response.data.password;
-            res.send(response)
-        } else {
-            res.send(response)
-        }
-    } else {
-        res.send({ success: false, message: "User details not found" })
-    }
-});
-
 router.post("/getFreshToken", async (req, res) => {
     let body = req.body;
     if (body.refreshToken) {

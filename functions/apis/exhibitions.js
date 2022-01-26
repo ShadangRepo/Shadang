@@ -3,7 +3,6 @@ const dbHandler = require('../firebase-utils/dbHandler');
 const constants = require('../utils/constants');
 const TableName = constants.TableName;
 const router = express.Router();
-const firebase = require("../firebase-utils/firebaseConfig");
 const moment = require("moment");
 const { Timestamp, arrayUnion, arrayRemove } = require('firebase/firestore');
 
@@ -77,6 +76,7 @@ router.get("/list", async (req, res) => {
             let formattedExhibitions = exhibitionResponse.data.map(item => ({
                 ...item,
                 createdAt: item.createdAt.toDate(),
+                updatedAt: item.updatedAt?.toDate(),
                 endDate: item.endDate.toDate(),
                 startDate: item.startDate.toDate(),
                 isLive: moment(item.startDate.toDate()).isSameOrBefore(moment())

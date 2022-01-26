@@ -76,7 +76,7 @@ const ThemeWrapper = ({ classes, children }) => {
 
   const getUserDetailsFromApi = async () => {
     try {
-      let query = await proxyClient.get("/auth/getUserDetails");
+      let query = await proxyClient.get("/users/getUserDetails");
       const response = query.response;
       if (response.success && response.data) {
         setUser(response.data);
