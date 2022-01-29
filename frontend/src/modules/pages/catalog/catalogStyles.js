@@ -1,5 +1,8 @@
 import { makeStyles } from "@material-ui/core";
 
+const headerHeight = 50;
+const cardBorderRadius = 26;
+
 export const useCatalogStyles = makeStyles((theme) => ({
     categoryList: {
         display: "flex",
@@ -44,7 +47,7 @@ export const useCatalogStyles = makeStyles((theme) => ({
     },
     exhibitionItemCommonStyle: {
         height: 350,
-        borderRadius: 26,
+        borderRadius: cardBorderRadius,
         marginTop: 20,
         [theme.breakpoints.down("sm")]: {
             height: 220
@@ -56,7 +59,6 @@ export const useCatalogStyles = makeStyles((theme) => ({
         position: "relative",
         overflow: "hidden",
         width: "80%",
-        border: "solid 3px #fff",
         [theme.breakpoints.down("sm")]: {
             width: "100%",
         },
@@ -81,42 +83,42 @@ export const useCatalogStyles = makeStyles((theme) => ({
     doorLeft: {
         position: "absolute",
         left: "0%",
-        top: 0,
+        top: headerHeight,
         bottom: 0,
         width: "50%",
         transition: "1s ease-in-out",
         // boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
-        background: "rgba(226,226,226,0.35)",
-        background: "-moz-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(226,226,226,0.35)), color-stop(50%, rgba(219,219,219,0.35)), color-stop(51%, rgba(209,209,209,0.35)), color-stop(100%, rgba(254,254,254,0.35)))",
-        background: "-webkit-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "-o-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "-ms-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "linear-gradient(135deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "rgba(100,100,226,0.35)",
+        background: "-moz-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(100,100,226,0.35)), color-stop(50%, rgba(190,190,219,0.35)), color-stop(51%, rgba(150,150,209,0.35)), color-stop(100%, rgba(209,209,254,0.35)))",
+        background: "-webkit-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "-o-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "-ms-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "linear-gradient(135deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
         filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe', GradientType=1 )"
     },
     doorRight: {
         position: "absolute",
         right: "0%",
-        top: 0,
+        top: headerHeight,
         bottom: 0,
         width: "50%",
         transition: "1s ease-in-out",
         // boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.40)",
-        background: "rgba(226,226,226,0.35)",
-        background: "-moz-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(226,226,226,0.35)), color-stop(50%, rgba(219,219,219,0.35)), color-stop(51%, rgba(209,209,209,0.35)), color-stop(100%, rgba(254,254,254,0.35)))",
-        background: "-webkit-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "-o-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "-ms-linear-gradient(-45deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
-        background: "linear-gradient(135deg, rgba(226,226,226,0.35) 0%, rgba(219,219,219,0.35) 50%, rgba(209,209,209,0.35) 51%, rgba(254,254,254,0.35) 100%)",
+        background: "rgba(100,100,226,0.35)",
+        background: "-moz-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "-webkit-gradient(left top, right bottom, color-stop(0%, rgba(100,100,226,0.35)), color-stop(50%, rgba(190,190,219,0.35)), color-stop(51%, rgba(150,150,209,0.35)), color-stop(100%, rgba(209,209,254,0.35)))",
+        background: "-webkit-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "-o-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "-ms-linear-gradient(-45deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
+        background: "linear-gradient(135deg, rgba(100,100,226,0.35) 0%, rgba(190,190,219,0.35) 50%, rgba(150,150,209,0.35) 51%, rgba(209,209,254,0.35) 100%)",
         filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe', GradientType=1 )"
     },
     openText: {
         position: "absolute",
-        top: "50%",
-        left: "calc(50% - 50px)",
-        padding: 5,
+        bottom: 20,
+        left: 20,
+        padding: 2,
         backgroundColor: theme.palette.primary.main,
         color: "#fff",
         fontWeight: "bold",
@@ -133,7 +135,8 @@ export const useCatalogStyles = makeStyles((theme) => ({
     exhibitionStatusChip: {
         position: "absolute",
         bottom: 10,
-        right: 10
+        right: 10,
+        backgroundColor: "#fff"
     },
     liveDot: {
         color: `#f00 !important`,
@@ -148,29 +151,36 @@ export const useCatalogStyles = makeStyles((theme) => ({
         justifyContent: "end"
     },
     exhibitionDescription: {
-        padding: "0 20px 0 20px",
+        padding: 20,
         fontSize: 12,
-        color: "#808080",
+        color: "#000",
         textAlign: "justify",
+        overflowY: "auto",
+        height: `calc(100% - ${headerHeight}px)`,
         [theme.breakpoints.down("sm")]: {
-            padding: "0 10px 0 10px",
+            padding: 10,
         },
     },
-    exhibitionDate: {
+    grayText: {
         fontSize: 12,
         color: "#808080",
+        textOverflow: "ellipsis",
+        overflow: "hidden"
     },
     boldText: {
         fontSize: 12,
-        color: "#808080",
+        color: "#000",
         fontWeight: "bold",
     },
-    avatarContainer: {
+    metaDataContainer: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         padding: 20,
-        fontSize: 12
+        fontSize: 12,
+        [theme.breakpoints.down("sm")]: {
+            padding: 10
+        },
     },
     exhibitionMeta: {
         padding: "0 10px 0 10px"
@@ -178,13 +188,16 @@ export const useCatalogStyles = makeStyles((theme) => ({
     userCard: {
         display: "flex",
         flexDirection: "column",
-        width: "60%",
+        width: 210,
         border: "solid 0px #fff",
-        overflow: "hidden"
     },
     userCardHeader: {
         backgroundColor: theme.palette.primary.main,
-        height: 40
+        height: headerHeight,
+        display: "flex",
+        alignItems: "center",
+        borderTopLeftRadius: cardBorderRadius,
+        borderTopRightRadius: cardBorderRadius
     },
     userInfo: {
         height: 105,//calculated as 30 % of total height of exhibitionDoor
@@ -195,5 +208,37 @@ export const useCatalogStyles = makeStyles((theme) => ({
         [theme.breakpoints.down("sm")]: {
             height: 66
         },
+    },
+    exhibitionTitle: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold",
+        padding: 10,
+        lineHeight: 1,
+        left: "1px",
+        right: "1px",
+        display: "flex",
+        alignItems: "center",
+        width: `calc(100% - 40px)`,
+        whiteSpace: "break-spaces",
+        [theme.breakpoints.down("sm")]: {
+            fontSize: 14,
+            padding: 10,
+        },
+    },
+    exhibitionIcon: {
+        width: 32,
+        height: 32,
+        marginLeft: 10,
+        backgroundColor: "#fff",
+        color: theme.palette.primary.main
+    },
+    userName: {
+        fontWeight: "bold",
+        color: "#000",
+        margin: "0 10px 0 50px"
+    },
+    userCardDetails: {
+        padding: 10
     }
 }))

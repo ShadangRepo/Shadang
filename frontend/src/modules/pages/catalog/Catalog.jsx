@@ -1,4 +1,4 @@
-import { Chip, Grid, Paper, Typography } from "@material-ui/core";
+import { Chip, Grid, IconButton, Paper, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../common/AppContext";
 import { useCatalogStyles } from "./catalogStyles";
@@ -13,6 +13,8 @@ import moment from "moment";
 import { dateFormat1, ExhibitionCategories } from "../../shared/constants";
 import { Avatar } from "@material-ui/core";
 import { useGlobalStyles } from "../../shared/globalStyles";
+import { HexagonAvatar } from "../../common/HexagonAvatar";
+import EmailIcon from '@material-ui/icons/Email';
 
 const Catalog = () => {
   const classes = useCatalogStyles();
@@ -89,8 +91,12 @@ const Catalog = () => {
     }
   };
 
+  const openMail = email => {
+    window.open(`mailto:${email}?body=Hi%20${email}`);
+  }
+
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} style={{ backgroundColor: "#fff" }}>
       <Grid item xs={12}>
         <div>
           <div>
@@ -123,51 +129,73 @@ const Catalog = () => {
               <Grid key={item.id} container spacing={2}>
                 {!isMobile && <Grid item xs={12} md={4} className={classes.UserDetailsContainer}>
                   <Paper className={`${classes.userCard} ${classes.exhibitionItemCommonStyle}`}>
-                    <div>
+                    <div style={{ position: "relative" }}>
                       <div className={classes.userCardHeader} />
                       {author ? <>
                         <div className={classes.userInfo}>
-                          <div>
-                            {author.profilePic ?
-                              (<Avatar alt={`${author.firstName} ${author.lastName}`} src={author.profilePic} />) :
-                              (<Avatar>
-                                {`${author.firstName[0]}${author.lastName[0]}`}
-                              </Avatar>
-                              )}
-                          </div>
-                          <div className={`${globalClasses.ml10} ${globalClasses.mr10}`}>
+                          <div className={classes.userName}>
                             <Typography className={classes.boldText}>
                               {`${author.firstName} ${author.lastName}`}
                             </Typography>
                           </div>
                         </div>
-                        <div>
+                        <div className={classes.userCardDetails}>
+                          <div className={`${globalClasses.flexRow} ${globalClasses.alignItemsCenter}`}>
+                            <Typography className={classes.boldText}>
+                              Contact on email:
+                            </Typography>
+                            <IconButton
+                              onClick={() => openMail(author.email)}
+                              size="small"
+                            >
+                              <EmailIcon fontSize="small" />
+                            </IconButton>
+                          </div>
+                          <Typography className={classes.grayText}>
+                            {author.email}
+                          </Typography>
                         </div>
                       </> :
                         <Typography className={classes.exhibitionDescription}>
                           Author details not found.
                         </Typography>}
+                      {author && <HexagonAvatar
+                        firstName={author.firstName}
+                        lastName={author.lastName}
+                        src={author.profilePic}
+                        style={{
+                          position: "absolute",
+                          top: 60,
+                          left: -52
+                        }}
+                      />}
                     </div>
+
                   </Paper>
                 </Grid>}
                 <Grid item xs={12} md={8}>
                   <Paper className={`${classes.exhibitionDoor} ${classes.exhibitionItemCommonStyle}`}>
-                    <div className={classes.doorLeft} id={`left_${item.id}`}>
-                      <div className={classes.avatarContainer}>
-                        <Avatar>
-                          {ExhibitionIcon ? (
-                            <ExhibitionIcon />
-                          ) : item.title[0]}
-                        </Avatar>
+                    <div className={classes.userCardHeader}>
+                      <Avatar className={classes.exhibitionIcon}>
+                        {ExhibitionIcon ? (
+                          <ExhibitionIcon />
+                        ) : item.title[0]}
+                      </Avatar>
+                      <Typography className={classes.exhibitionTitle}>
+                        {item.title}
+                      </Typography>
+                    </div>
+                    <div className={classes.doorLeft} id={`left_${item.id}`} onClick={isMobile ? () => openDoor(item.id) : () => { }}>
+                      <div className={classes.metaDataContainer}>
                         <div className={classes.exhibitionMeta}>
                           <Typography className={classes.boldText}>
                             {item.category} Exhibition
                           </Typography>
                           {item.isLive ?
-                            <Typography className={classes.exhibitionDate}>
+                            <Typography className={classes.grayText}>
                               Open till: {moment(item.endDate).format(dateFormat1)}
                             </Typography> :
-                            <Typography className={classes.exhibitionDate}>
+                            <Typography className={classes.grayText}>
                               Opening on: {moment(item.startDate).format(dateFormat1)}
                             </Typography>
                           }
@@ -175,10 +203,7 @@ const Catalog = () => {
                       </div>
 
                     </div>
-                    <div className={classes.doorRight} id={`right_${item.id}`}>
-                      <Typography className={classes.doorText}>
-                        {item.title}
-                      </Typography>
+                    <div className={classes.doorRight} id={`right_${item.id}`} onClick={isMobile ? () => openDoor(item.id) : () => { }}>
                       <Typography className={classes.exhibitionDescription}>
                         {item.description}
                       </Typography>
@@ -212,7 +237,7 @@ const Catalog = () => {
                         />
                       )}
                     </div>
-                    {item.isLive && (
+                    {item.isLive && !isMobile && (
                       <Typography
                         className={classes.openText}
                         onClick={() => openDoor(item.id)}
