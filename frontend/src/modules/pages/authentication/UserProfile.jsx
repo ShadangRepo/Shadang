@@ -7,11 +7,9 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../common/AppContext";
-import { CircleAvatar } from "../../common/CircleAvatar";
 import { useAuthenticationStyles } from "./authenticationStyles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import Divider from "@material-ui/core/Divider";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
@@ -20,6 +18,7 @@ import { proxyClient } from "../../shared/proxy-client";
 import { NotificationStatus } from "../../common/Notifications";
 import moment from "moment";
 import { dateFormat1, ExhibitionCategories } from "../../shared/constants";
+import { HexagonAvatar } from "../../common/HexagonAvatar";
 
 const UserProfile = () => {
   const classes = useAuthenticationStyles();
@@ -56,13 +55,12 @@ const UserProfile = () => {
   return (
     <Paper className={globalClasses.paper}>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <CircleAvatar
-            url={user.profileImage}
+        <Grid item xs={12} className={globalClasses.justifyContentCenter}>
+          <HexagonAvatar
+            firstName={user.firstName}
+            lastName={user.lastName}
+            src={user.profilePic}
             size={200}
-            alt={`${user.firstName[0]}${user.lastName[0]}`.toUpperCase()}
-            label={`${user.firstName} ${user.lastName}`}
-            labelStyle={{ fontSize: 16 }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -112,19 +110,18 @@ const UserProfile = () => {
                     primary={item.title}
                     secondary={
                       <>
-                        <div>
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            className={classes.inline}
-                            color="textPrimary"
-                          >
-                            {item.description}
-                          </Typography>
-                        </div>
-                        <div className={globalClasses.mt10}>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          className={classes.inline}
+                          color="textPrimary"
+                        >
+                          {item.description}
+                        </Typography>
+                        <br />
+                        <span className={globalClasses.mt10}>
                           {item.startDate} - {item.endDate}
-                        </div>
+                        </span>
                       </>
                     }
                   />
