@@ -112,6 +112,22 @@ const ExhibitionCategories = [
     }
 ];
 
+const SexConstants = {
+    MALE: "male",
+    FEMALE: "female"
+}
+
+const SexList = [
+    {
+        label: "Male",
+        value: SexConstants.MALE
+    },
+    {
+        label: "Female",
+        value: SexConstants.FEMALE
+    }
+]
+
 const dateFormat1 = "DD/MM/YYYY";
 const dateFormat2 = "MM/DD/YYYY";
 const dateTimeFormat1 = "DD/MM/YYYY HH:mm:ss";
@@ -129,5 +145,7 @@ export {
     dateFormat1,
     dateFormat2,
     dateTimeFormat1,
-    dateTimeFormat2
+    dateTimeFormat2,
+    SexConstants,
+    SexList
 };

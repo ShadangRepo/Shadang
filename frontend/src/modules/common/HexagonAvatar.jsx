@@ -9,7 +9,8 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         justifyContent: "center",
         fontWeight: "bold",
-        color: "#fff"
+        color: "#fff",
+        position: "relative"
     },
     waterMarkName: {
         fontWeight: "bold"
@@ -25,19 +26,22 @@ const shadowWidth = 2;
 
 const HexagonAvatar = ({
     src,
-    firstName,
-    lastName,
+    firstName = "",
+    lastName = "",
     size,
-    style = {}
+    style = {},
+    onClick = () => { },
+    children
 }) => {
     const classes = useStyles();
     return <div className={`${classes.hexagon} ${classes.shadow}`} style={{ height: size + shadowWidth || defaultSize + shadowWidth, width: size + shadowWidth || defaultSize + shadowWidth, ...style }}>
-        <div className={classes.hexagon} style={{ height: size || defaultSize, width: size || defaultSize, backgroundColor: "#fff" }}>
+        <div onClick={onClick} className={classes.hexagon} style={{ height: size || defaultSize, width: size || defaultSize, backgroundColor: "#fff" }}>
             <div className={classes.hexagon} style={{ height: size - borderSize || defaultSize - borderSize, width: size - borderSize || defaultSize - borderSize }}>
                 {src ?
                     <img src={src} alt="Avatar" style={{ height: size - borderSize || defaultSize - borderSize, width: size - borderSize || defaultSize - borderSize }} /> :
                     <Typography className={classes.waterMarkName}>{`${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`}</Typography>
                 }
+                {children}
             </div>
         </div>
     </div>

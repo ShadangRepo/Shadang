@@ -12,6 +12,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import { AppContext } from "./AppContext";
 import { useGlobalStyles } from "../shared/globalStyles";
+import { HexagonAvatar } from "./HexagonAvatar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
   checkLabel: {
     fontSize: 12,
   },
+  circularProgress: {
+    position: "absolute"
+  }
 }));
 
 const UploadHandler = (props) => {
@@ -64,8 +68,11 @@ const UploadHandler = (props) => {
     chooseLabel,
     multiple,
     accept,
+    profileView = false, // If true, this uload handler will show hexagonal view 
+    viewSize = 200, // Height, width of profile, this will work in case of multiple = false
     onChange, //onChange function is triggered on upload complete and change of active status of image
     defaultValue, //if we want to show some already uploaded images then assign it to default value. it should be array of objects of format {id:"",url:"",active:""}
+    folderName = "other" //This is folder name under images folder on firebase storage
   } = props;
   const classes = useStyles();
   const globalClasses = useGlobalStyles();
@@ -74,6 +81,7 @@ const UploadHandler = (props) => {
   const fileRef = useRef();
   const { user } = useContext(AppContext);
   const [progress, setProgress] = useState(0);
+  const defaultProfile = `/images/default_profile_male.png`;
 
   const chooseImages = () => {
     fileRef.current.click();
@@ -85,12 +93,10 @@ const UploadHandler = (props) => {
         setProgress(0);
         let name = fileData.file.name.split(".");
         let extension = name[name.length - 1];
-        let fileName = `${new Date().getTime()}_${Math.floor(
-          Math.random() * 10000000000000
-        )}.${extension}`;
+        let fileName = `${new Date().getTime()}_${Math.floor(Math.random() * 10000000000000)}.${extension}`;
         const uploadTask = storage
           .ref(
-            `images/exhibitions/${user.firstName}_${user.lastName}/${fileName}`
+            `images/${folderName}/${user.firstName}_${user.lastName}/${fileName}`
           )
           .put(fileData.file);
         uploadTask.on(
@@ -106,7 +112,7 @@ const UploadHandler = (props) => {
           },
           () => {
             storage
-              .ref(`images/exhibitions/${user.firstName}_${user.lastName}`)
+              .ref(`images/${folderName}/${user.firstName}_${user.lastName}`)
               .child(fileName)
               .getDownloadURL()
               .then((url) => {
@@ -206,104 +212,160 @@ const UploadHandler = (props) => {
       (filesToUpload.length === uploadedFiles.length && progress !== 100));
 
   return (
-    <Grid container spacing={2} className={classes.root}>
-      <Grid item container xs={12} className={classes.uploadContainer}>
-        {uploadedFiles.length > 0 ? (
-          uploadedFiles.map((item, i) => (
-            <Grid
-              item
-              xs={6}
-              md={3}
-              key={`${i}`}
-              className={`${globalClasses.justifyContentCenter}`}
-            >
-              {item && item.url ? (
-                <div className={globalClasses.flexColumn}>
-                  <img
-                    src={item.url}
-                    alt="file"
-                    className={classes.filePreview}
-                  />
-                  {!uploadInProgress && (
-                    <div className={globalClasses.justifyContentCenter}>
-                      <FormControlLabel
-                        classes={{ label: classes.checkLabel }}
-                        control={
-                          <Switch
-                            id="active"
-                            color="primary"
-                            size="small"
-                            checked={item.active}
-                            onChange={(event) =>
-                              changeActiveStatus(event.target.checked, item.url)
-                            }
-                          />
-                        }
-                        label="Active"
-                      />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Box
-                  position="relative"
-                  display="inline-flex"
-                  className={classes.filePreview}
-                >
-                  <CircularProgress variant="determinate" value={progress} />
+    <>
+      {multiple && <Grid container spacing={2} className={classes.root}>
+        <Grid item container xs={12} className={classes.uploadContainer}>
+          {uploadedFiles.length > 0 ? (
+            uploadedFiles.map((item, i) => (
+              <Grid
+                item
+                xs={6}
+                md={3}
+                key={`${i}`}
+                className={`${globalClasses.justifyContentCenter}`}
+              >
+                {item && item.url ? (
+                  <div className={globalClasses.flexColumn}>
+                    <img
+                      src={item.url}
+                      alt="file"
+                      className={classes.filePreview}
+                    />
+                    {!uploadInProgress && (
+                      <div className={globalClasses.justifyContentCenter}>
+                        <FormControlLabel
+                          classes={{ label: classes.checkLabel }}
+                          control={
+                            <Switch
+                              id="active"
+                              color="primary"
+                              size="small"
+                              checked={item.active}
+                              onChange={(event) =>
+                                changeActiveStatus(event.target.checked, item.url)
+                              }
+                            />
+                          }
+                          label="Active"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
                   <Box
-                    top={0}
-                    left={0}
-                    bottom={0}
-                    right={0}
-                    position="absolute"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
+                    position="relative"
+                    display="inline-flex"
+                    className={classes.filePreview}
                   >
-                    <Typography
-                      variant="caption"
-                      component="div"
-                      color="textSecondary"
-                    >{`${progress}%`}</Typography>
+                    <CircularProgress variant="determinate" value={progress} />
+                    <Box
+                      top={0}
+                      left={0}
+                      bottom={0}
+                      right={0}
+                      position="absolute"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Typography
+                        variant="caption"
+                        component="div"
+                        color="textSecondary"
+                      >{`${progress}%`}</Typography>
+                    </Box>
                   </Box>
-                </Box>
-              )}
-            </Grid>
-          ))
-        ) : (
-          <Typography className={classes.noFilesText}>
-            No files selected
-          </Typography>
-        )}
-      </Grid>
-      <Grid item xs={12} className={classes.buttonContainer}>
-        <input
-          ref={fileRef}
-          type="file"
-          style={{ display: "none" }}
-          name="files"
-          id="files"
-          multiple={multiple || false}
-          onChange={handleFilesChange}
-          accept={accept}
-        />
-        {uploadInProgress && (
-          <Typography className={classes.uploadingLabel}>
-            {`Uploading ${uploadedFiles.length}/${filesToUpload.length}`}
-          </Typography>
-        )}
-        <Button
-          variant="outlined"
-          color="primary"
-          className={classes.actionButton}
-          onClick={chooseImages}
-          disabled={uploadInProgress}
-        >
-          {chooseLabel || "Choose"}
-        </Button>
-      </Grid>
-    </Grid>
+                )}
+              </Grid>
+            ))
+          ) : (
+            <Typography className={classes.noFilesText}>
+              No files selected
+            </Typography>
+          )}
+        </Grid>
+        <Grid item xs={12} className={classes.buttonContainer}>
+          {uploadInProgress && (
+            <Typography className={classes.uploadingLabel}>
+              {`Uploading ${uploadedFiles.length}/${filesToUpload.length}`}
+            </Typography>
+          )}
+          <Button
+            variant="outlined"
+            color="primary"
+            className={classes.actionButton}
+            onClick={chooseImages}
+            disabled={uploadInProgress}
+          >
+            {chooseLabel || "Choose"}
+          </Button>
+        </Grid>
+      </Grid>}
+      {!multiple && <>
+        {profileView ? <div>
+          {uploadedFiles.length > 0 ? (
+            uploadedFiles.map((item, i) => (
+              <div key="profileImage">
+                {item && item.url ? (
+                  <HexagonAvatar
+                    firstName={""}
+                    lastName={""}
+                    src={item.url}
+                    size={viewSize}
+                    onClick={chooseImages}
+                  />
+                ) : (
+                  <HexagonAvatar
+                    firstName={""}
+                    lastName={""}
+                    src={defaultProfile}
+                    size={viewSize}>
+                    <CircularProgress variant="determinate" value={progress} classes={{ root: classes.circularProgress }} />
+                    <Box
+                      top={0}
+                      left={0}
+                      bottom={0}
+                      right={0}
+                      position="absolute"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Typography
+                        variant="caption"
+                        component="div"
+                        color="textSecondary"
+                      >{`${progress}%`}</Typography>
+                    </Box>
+                  </HexagonAvatar>
+                )}
+              </div>
+            ))) : (
+            <HexagonAvatar
+              firstName={""}
+              lastName={""}
+              src={defaultProfile}
+              size={viewSize}
+              onClick={chooseImages}
+            />
+          )}
+
+        </div> :
+          <div>
+            Normal upload
+          </div>}
+      </>}
+      <input
+        ref={fileRef}
+        type="file"
+        style={{ display: "none" }}
+        name="files"
+        id="files"
+        multiple={multiple || false}
+        onChange={handleFilesChange}
+        accept={accept}
+      />
+    </>
   );
 };
 

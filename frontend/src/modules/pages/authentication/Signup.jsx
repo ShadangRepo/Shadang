@@ -6,7 +6,7 @@ import {
   StandardMessageTypes,
 } from "../../common/Notifications";
 import { AppContext } from "../../common/AppContext";
-import { emailValidator } from "../../shared/fieldValidators";
+import { emailValidator, phoneNumberRegex, specialCharacterRegex } from "../../shared/fieldValidators";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import { useAuthenticationStyles } from "./authenticationStyles";
@@ -18,8 +18,6 @@ import {
   setRefreshTokenToLocalStorage,
 } from "../../preferences/userPreferences";
 import { BrandName } from "../../shared/constants";
-var specialCharacterRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-var phoneNumberRegex = /^[7-9][0-9]*$/;
 
 const Signup = () => {
   const classes = useAuthenticationStyles();

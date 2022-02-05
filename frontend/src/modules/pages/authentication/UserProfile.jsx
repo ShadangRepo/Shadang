@@ -1,8 +1,10 @@
 import {
   Button,
   Grid,
+  IconButton,
   ListSubheader,
   Paper,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
@@ -19,12 +21,15 @@ import { NotificationStatus } from "../../common/Notifications";
 import moment from "moment";
 import { dateFormat1, ExhibitionCategories } from "../../shared/constants";
 import { HexagonAvatar } from "../../common/HexagonAvatar";
+import EditIcon from "@material-ui/icons/Edit";
+import { useHistory } from "react-router";
 
 const UserProfile = () => {
   const classes = useAuthenticationStyles();
   const globalClasses = useGlobalStyles();
   const { user, queueNotification } = useContext(AppContext);
   const [exhibitions, setExhibitions] = useState([]);
+  const history = useHistory();
 
   const getExhibitions = async () => {
     try {
@@ -72,6 +77,16 @@ const UserProfile = () => {
           <Typography className={classes.centerAligned}>
             {user.email}
           </Typography>
+        </Grid>
+        <Grid item xs={12} className={classes.displayFlexEnd}>
+          <Tooltip title={"Edit"}>
+            <IconButton
+              onClick={() => history.push("/user-profile/edit")}
+              size="small"
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
         </Grid>
       </Grid>
       <hr />

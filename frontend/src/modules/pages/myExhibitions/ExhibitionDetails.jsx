@@ -23,7 +23,6 @@ import { AppContext } from "../../common/AppContext";
 import { proxyClient } from "../../shared/proxy-client";
 import { useGlobalStyles } from "../../shared/globalStyles";
 import { ExhibitionCategories } from "../../shared/constants";
-import { getRefreshTokenFromLocalStorage } from "../../preferences/userPreferences";
 
 const ExhibitionDetails = () => {
   const history = useHistory();
@@ -273,6 +272,7 @@ const ExhibitionDetails = () => {
                   accept="image/*"
                   defaultValue={exhibitionDetails.images}
                   onChange={(urlList) => onImagesChange(urlList)}
+                  folderName="exhibitions"
                 />
               </Grid>
             )}

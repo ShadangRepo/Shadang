@@ -7,6 +7,7 @@ import { Dashboard } from "../pages/dashboard/Dashboard";
 import { AppLayout } from "./AppLayout";
 import { ProtectedRoute } from "../common/ProtectedRoute";
 import { MyExhibitions } from "../pages/myExhibitions/MyExhibitions";
+import { EditProfile } from "../pages/authentication/EditProfile";
 
 const Application = () => {
   return (
@@ -19,6 +20,7 @@ const Application = () => {
         />
         <ProtectedRoute path="/catalog" component={Catalog} />
         <ProtectedRoute path="/dashboard" component={Dashboard} />
+        <ProtectedRoute path="/user-profile/edit" component={EditProfile} />
         <ProtectedRoute path="/user-profile" component={UserProfile} />
         <ProtectedRoute path="/my-exhibitions" component={MyExhibitions} />
         <Route component={NotFound} />

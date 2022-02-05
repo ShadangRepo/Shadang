@@ -5,4 +5,7 @@ const emailValidator = email => {
     return true;
 };
 
-export { emailValidator };
+var specialCharacterRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+var phoneNumberRegex = /^[7-9][0-9]*$/;
+
+export { emailValidator, specialCharacterRegex, phoneNumberRegex };
