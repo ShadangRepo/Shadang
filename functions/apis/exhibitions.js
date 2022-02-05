@@ -212,7 +212,7 @@ router.put("/update", async (req, res) => {
                 if (newImages && newImages.length > 0) {
                     await dbHandler.batchCreate(TableName.exhibitionFiles, newImages)//create new records
                 }
-                res.send({ success: true, message: "Exhibition created successfully" });
+                res.send({ success: true, message: "Exhibition updated successfully" });
             } else {
                 res.send(response);
             }
