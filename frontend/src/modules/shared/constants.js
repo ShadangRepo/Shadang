@@ -128,6 +128,13 @@ const SexList = [
     }
 ]
 
+const ProfessionList = [
+    "Teacher", "Physician", "Dentist", "Electrician", "Veterinarian", "Librarian", "Farmer", "Labourer", "Economist", "Dietitian", "Bartender", "Hairdresser", "Bricklayer",
+    "Bus driver", "Fisherman", "Aviator", "Astronaut", "Cashier", "Technician", "Estate agent", "Journalist", "Gardener", "Police Officer", "Scientist", "Designer", "Engineer",
+    "Lawyer", "Artist", "Butcher", "Firefighter", "Actor", "Secretary", "Waiting staff", "Baker", "Plumber", "Tailor", "Businessperson", "Student", "Cleaner",
+    "Barber", "Mail carrier", "Lifeguard", "Carpenter", "Software Developer", "Politician", "Judge", "Construction worker", "Pharmacist", "Accountant", "Chef", "Architect"
+]
+
 const dateFormat1 = "DD/MM/YYYY";
 const dateFormat2 = "MM/DD/YYYY";
 const dateTimeFormat1 = "DD/MM/YYYY HH:mm:ss";
@@ -147,5 +154,6 @@ export {
     dateTimeFormat1,
     dateTimeFormat2,
     SexConstants,
-    SexList
+    SexList,
+    ProfessionList
 };

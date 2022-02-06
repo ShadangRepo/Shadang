@@ -70,6 +70,11 @@ const UserProfile = () => {
         </Grid>
         <Grid item xs={12}>
           <Typography className={classes.centerAligned}>
+            {`${user.firstName} ${user.lastName}`}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography className={classes.centerAligned}>
             {user.contact}
           </Typography>
         </Grid>

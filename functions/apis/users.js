@@ -13,6 +13,8 @@ router.get("/getUserDetails", async (req, res) => {
                 res.send({ success: false, message: "User does not exist" });
             } else if (response.success && response.data) {
                 delete response.data.password;
+                response.data.createdAt = response.data.createdAt?.toDate();
+                response.data.updatedAt = response.data.updatedAt?.toDate();
                 res.send(response)
             } else {
                 res.send(response)
@@ -39,6 +41,29 @@ router.get("/userList", async (req, res) => {
             res.send({ success: true, data: formattedResponse })
         } else {
             res.send(response)
+        }
+    } catch (error) {
+        res.send({ success: false, message: error.message })
+    }
+});
+
+router.put("/updateProfile", async (req, res) => {
+    try {
+        let user = req.decodedUser;
+        let body = req.body;
+        if (!body.email) {
+            res.send({ success: false, message: "Email is required" });
+        } else if (!body.contact) {
+            res.send({ success: false, message: "Contact is required" })
+        } else if (!body.firstName) {
+            res.send({ success: false, message: "First name is required" })
+        } else if (!body.lastName) {
+            res.send({ success: false, message: "Last name is required" })
+        } else {
+            delete body.createdAt;
+            delete body.updatedAt;
+            const updateResponse = await dbHandler.update(TableName.users, user.id, body);
+            res.send(updateResponse);
         }
     } catch (error) {
         res.send({ success: false, message: error.message })
